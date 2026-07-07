@@ -818,22 +818,9 @@
   }
 
   // ---------- storage helpers (Anthropic artifact persistent storage) ----------
-  async function storageGet(key, fallback){
-    try{
-      const res = await window.storage.get(key, false);
-      if(!res) return fallback;
-      return JSON.parse(res.value);
-    }catch(e){
-      return fallback;
-    }
-  }
-  async function storageSet(key, value){
-    try{
-      await window.storage.set(key, JSON.stringify(value), false);
-    }catch(e){
-      console.error("storage set failed", key, e);
-    }
-  }
+  // ---------- storage helpers (Standard Browser Local Storage) ----------
+async function storageGet(key, fallback){try{const res = localStorage.getItem(key); if(!res) return fallback; return JSON.parse(res); }catch(e){return fallback; } }
+async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringify(value)); }catch(e){console.error("storage set failed", key, e); } }
 
   async function loadProfile(){ profile = await storageGet('li_profile', null); }
   async function saveProfile(){ await storageSet('li_profile', profile); }

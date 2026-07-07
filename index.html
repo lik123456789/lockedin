@@ -642,21 +642,23 @@
   }
 
   // ---------- storage ----------
-  async function loadSessions(){
-    try{
-      const res = await window.storage.get('study-sessions', false);
-      sessions = res && res.value ? JSON.parse(res.value) : [];
-    }catch(e){
-      sessions = [];
-    }
-    renderHome();
+  function loadSessions(){
+  try {
+    const res = localStorage.getItem('study-sessions');
+    sessions = res ? JSON.parse(res) : [];
+  } catch(e) {
+    sessions = [];
   }
-  async function saveSessions(){
-    try{
-      await window.storage.set('study-sessions', JSON.stringify(sessions), false);
-    }catch(e){ console.error("save failed", e); }
-  }
+  renderHome();
+}
 
+function saveSessions(){
+  try {
+    localStorage.setItem('study-sessions', JSON.stringify(sessions));
+  } catch(e) {
+    console.error("save failed", e);
+  }
+}
   // ---------- time helpers ----------
   function fmtHMS(totalSec){
     totalSec = Math.max(0, Math.floor(totalSec));

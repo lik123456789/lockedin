@@ -39,7 +39,7 @@
     margin:0 auto;
     min-height:100vh;
     position:relative;
-    padding-bottom:40px;
+    padding-bottom:90px;
   }
   .top-spacer{ height: var(--top-clear); width:100%; }
   .screen{ display:none; animation: fadeIn .35s ease both; }
@@ -671,6 +671,80 @@
     padding:0 22px 20px;
   }
 
+  /* ---------- TAB BAR ---------- */
+  .tab-bar{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    max-width:460px;
+    margin:0 auto;
+    background:var(--bg-elev);
+    border-top:1px solid var(--hairline);
+    display:none;
+    z-index:40;
+    padding:8px 20px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  }
+  .tab-bar.visible{ display:flex; }
+  .tab-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    background:none;
+    border:none;
+    color:var(--text-faint);
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    cursor:pointer;
+    padding:6px 0;
+  }
+  .tab-btn .ticon{ font-size:19px; line-height:1; }
+  .tab-btn.active{ color:var(--brass-bright); }
+
+  /* ---------- INSIGHTS / HEATMAP ---------- */
+  .heatmap-wrap{ padding:0 20px 8px; overflow-x:auto; }
+  .heatmap-scroll{ display:inline-flex; gap:3px; padding-bottom:4px; }
+  .heatmap-col{ display:flex; flex-direction:column; gap:3px; }
+  .heatmap-cell{ width:11px; height:11px; border-radius:3px; background:var(--card-2); }
+  .heatmap-cell.l0{ background:var(--card-2); }
+  .heatmap-cell.l1{ background:rgba(201,160,92,0.35); }
+  .heatmap-cell.l2{ background:#C9A05C; }
+  .heatmap-cell.l3{ background:#E4C07E; }
+  .heatmap-legend{ display:flex; align-items:center; gap:4px; padding:0 20px 22px; font-size:10px; color:var(--text-faint); }
+  .legend-box{ width:10px; height:10px; border-radius:2px; }
+  .legend-box.l0{ background:var(--card-2); }
+  .legend-box.l1{ background:rgba(201,160,92,0.35); }
+  .legend-box.l2{ background:#C9A05C; }
+  .legend-box.l3{ background:#E4C07E; }
+
+  /* ---------- GOALS ---------- */
+  .goal-card{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:16px;
+    padding:14px 16px;
+  }
+  .goal-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .goal-head .name{ font-size:13.5px; font-weight:700; }
+  .goal-head .amt{ font-size:11.5px; color:var(--text-faint); font-family: ui-monospace, monospace; }
+  .goal-bar-track{ height:8px; border-radius:100px; background:var(--card-2); overflow:hidden; }
+  .goal-bar-fill{ height:100%; background:linear-gradient(90deg,var(--brass),var(--brass-bright)); border-radius:100px; }
+  .goal-del{ font-size:11px; color:var(--text-faint); text-decoration:underline; cursor:pointer; margin-top:9px; display:inline-block; }
+
+  /* ---------- PRS ---------- */
+  .pr-card{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:16px;
+    padding:14px 16px;
+  }
+  .pr-card .tag{ font-size:13.5px; font-weight:700; margin-bottom:8px; }
+  .pr-row{ display:flex; justify-content:space-between; font-size:12px; padding:3px 0; }
+  .pr-row .k{ color:var(--text-faint); }
+  .pr-row .v{ font-family: ui-monospace, monospace; font-weight:700; color:var(--text); }
+
   ::-webkit-scrollbar{ display:none; }
 </style>
 </head>
@@ -792,6 +866,32 @@
     <div style="padding:0 24px;" id="detail-tracker-slot"></div>
   </div>
 
+  <!-- ============ INSIGHTS ============ -->
+  <div class="screen" id="screen-insights">
+    <div class="top-spacer"></div>
+    <div class="home-header">
+      <div>
+        <div class="eyebrow">Overview</div>
+        <h1>Insights</h1>
+      </div>
+    </div>
+
+    <div class="section-title"><span>Consistency</span></div>
+    <div class="heatmap-wrap"><div class="heatmap-scroll" id="heatmap-scroll"></div></div>
+    <div class="heatmap-legend">Less <span class="legend-box l0"></span><span class="legend-box l1"></span><span class="legend-box l2"></span><span class="legend-box l3"></span> More</div>
+
+    <div class="section-title"><span>Weekly Goals</span><span class="clear-link" id="btn-add-goal">+ add goal</span></div>
+    <div class="feed" id="goals-feed" style="margin-bottom:24px;"></div>
+
+    <div class="section-title"><span>Personal Records</span></div>
+    <div class="feed" id="pr-feed" style="margin-bottom:24px;"></div>
+  </div>
+
+  <div class="tab-bar visible" id="tab-bar">
+    <button class="tab-btn active" id="tab-home"><span class="ticon">🏠</span>Home</button>
+    <button class="tab-btn" id="tab-insights"><span class="ticon">📊</span>Insights</button>
+  </div>
+
 </div>
 
 <script>
@@ -807,6 +907,7 @@
   let subjects = [];
   let trackers = [];
   let sessions = [];
+  let goals = {}; // { tagName: hoursPerWeek }
 
   let currentSubject = null;
   let currentIntention = "";
@@ -823,12 +924,38 @@
   let trackerEditMode = false;
   let detailSessionId = null;
 
+  // phone-lock / pickup tracking
+  let sessionActive = false;
+  let pickupPending = false;
+  let pickupCount = 0;
+
   const $ = (id) => document.getElementById(id);
 
   function showScreen(id){
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     $(id).classList.add("active");
+    const tb = $('tab-bar');
+    if(id === 'screen-home' || id === 'screen-insights'){
+      tb.classList.add('visible');
+      $('tab-home').classList.toggle('active', id === 'screen-home');
+      $('tab-insights').classList.toggle('active', id === 'screen-insights');
+    } else {
+      tb.classList.remove('visible');
+    }
   }
+
+  document.addEventListener('visibilitychange', () => {
+    if(!sessionActive) return;
+    if(document.hidden){
+      pickupPending = true;
+    } else if(pickupPending){
+      pickupCount++;
+      pickupPending = false;
+    }
+  });
+
+  $('tab-home').onclick = () => { showScreen('screen-home'); renderHome(); };
+  $('tab-insights').onclick = () => { showScreen('screen-insights'); renderInsights(); };
 
   // ---------- storage helpers (plain localStorage, not the artifact key-value store) ----------
   function storageGet(key, fallback){
@@ -855,6 +982,8 @@
   function saveTrackers(){ storageSet('li_trackers', trackers); }
   function loadSessions(){ sessions = storageGet('li_sessions', []); }
   function saveSessions(){ storageSet('li_sessions', sessions); }
+  function loadGoals(){ goals = storageGet('li_goals', {}); }
+  function saveGoals(){ storageSet('li_goals', goals); }
 
   // ---------- time helpers ----------
   function fmtHMS(totalSec){
@@ -1240,6 +1369,9 @@
     sessionStart = Date.now();
     elapsedBeforePause = 0;
     paused = false;
+    pickupCount = 0;
+    pickupPending = false;
+    sessionActive = true;
     $('btn-pause').textContent = "Pause";
     $('timer-sub').textContent = "Studying";
     $('rec-dot').classList.remove('paused');
@@ -1279,6 +1411,7 @@
   $('btn-end').onclick = () => {
     clearInterval(timerInterval);
     stopCamera();
+    sessionActive = false;
     pendingDuration = Math.floor(currentElapsedSec());
     if(pendingDuration < 5){
       showScreen('screen-home');
@@ -1324,6 +1457,13 @@
 
     const trackerSlot = $('tracker-summary-slot');
     trackerSlot.innerHTML = "";
+    if(pickupCount > 0){
+      const pu = document.createElement('div');
+      pu.className = "summary-sub";
+      pu.style.marginTop = "-8px";
+      pu.textContent = "📵 " + pickupCount + " phone pickup" + (pickupCount===1?"":"s") + " mid-session";
+      trackerSlot.appendChild(pu);
+    }
     activeTrackers.filter(t => t.count > 0).forEach(t => {
       const rate = (pendingDuration/60/t.count).toFixed(1);
       const card = document.createElement('div');
@@ -1362,6 +1502,7 @@
       intention: currentIntention,
       durationSec: pendingDuration,
       rating: selectedRating || null,
+      pickups: pickupCount,
       trackers: activeTrackers.filter(t => t.count > 0).map(t => ({
         id: t.id, name: t.name, unit: t.unit, count: t.count, events: t.events
       }))
@@ -1389,7 +1530,7 @@
     const statPairs = [
       ["Duration", fmtShort(s.durationSec)],
       ["Rating", s.rating ? "★".repeat(s.rating) : "—"],
-      ["Trackers used", (s.trackers||[]).length]
+      ["Pickups", s.pickups || 0]
     ];
     statPairs.forEach(([k,v]) => {
       const card = document.createElement('div');
@@ -1425,10 +1566,164 @@
   }
   $('btn-detail-back').onclick = () => showScreen('screen-home');
 
+  // ---------- heatmap ----------
+  function renderHeatmap(){
+    const scroll = $('heatmap-scroll');
+    scroll.innerHTML = "";
+    const totalDays = 371; // ~53 weeks
+    const today = startOfDay(new Date());
+    let start = new Date(today);
+    start.setDate(start.getDate() - (totalDays - 1));
+    start.setDate(start.getDate() - start.getDay()); // align to Sunday
+
+    const dayMinutes = {};
+    sessions.forEach(s => {
+      const k = dayKey(s.startedAt);
+      dayMinutes[k] = (dayMinutes[k] || 0) + s.durationSec/60;
+    });
+
+    let cursor = new Date(start);
+    while(cursor <= today){
+      const col = document.createElement('div');
+      col.className = 'heatmap-col';
+      for(let d=0; d<7; d++){
+        const cell = document.createElement('div');
+        if(cursor <= today){
+          const mins = dayMinutes[dayKey(cursor)] || 0;
+          let lvl = 0;
+          if(mins > 0 && mins < 20) lvl = 1;
+          else if(mins >= 20 && mins < 60) lvl = 2;
+          else if(mins >= 60) lvl = 3;
+          cell.className = 'heatmap-cell l' + lvl;
+          cell.title = cursor.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ': ' + Math.round(mins) + 'm';
+        } else {
+          cell.className = 'heatmap-cell';
+          cell.style.visibility = 'hidden';
+        }
+        col.appendChild(cell);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      scroll.appendChild(col);
+    }
+    scroll.parentElement.scrollLeft = scroll.scrollWidth;
+  }
+
+  // ---------- goals ----------
+  function minutesThisWeekForSubject(subj){
+    const start = startOfDay(new Date());
+    start.setDate(start.getDate() - 6);
+    return sessions.filter(s => s.subject === subj && new Date(s.startedAt) >= start)
+                   .reduce((a,s) => a + s.durationSec, 0) / 60;
+  }
+
+  function renderGoals(){
+    const feed = $('goals-feed');
+    feed.innerHTML = "";
+    const tags = Object.keys(goals);
+    if(tags.length === 0){
+      const empty = document.createElement('div');
+      empty.className = "empty-state";
+      empty.innerHTML = "No weekly goals yet.<br/>Tap \u201C+ add goal\u201D to set one for a tag.";
+      feed.appendChild(empty);
+      return;
+    }
+    tags.forEach(tag => {
+      const targetHrs = goals[tag];
+      const mins = minutesThisWeekForSubject(tag);
+      const pct = Math.max(0, Math.min(100, (mins/60) / targetHrs * 100));
+      const card = document.createElement('div');
+      card.className = "goal-card";
+      card.innerHTML = `
+        <div class="goal-head">
+          <span class="name">${escapeHtml(tag)}</span>
+          <span class="amt">${(mins/60).toFixed(1)}h / ${targetHrs}h</span>
+        </div>
+        <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${pct}%;"></div></div>
+        <div class="goal-del">remove goal</div>
+      `;
+      card.querySelector('.goal-del').onclick = () => {
+        delete goals[tag];
+        saveGoals();
+        renderGoals();
+      };
+      feed.appendChild(card);
+    });
+  }
+
+  $('btn-add-goal').onclick = () => {
+    if(subjects.length === 0){ alert('Add a tag first.'); return; }
+    const tag = prompt('Set a weekly goal for which tag?\n(' + subjects.join(', ') + ')', subjects[0]);
+    if(!tag) return;
+    const trimmed = tag.trim();
+    if(!subjects.includes(trimmed)){ alert('That\u2019s not one of your tags.'); return; }
+    const hrsStr = prompt('Weekly goal in hours for "' + trimmed + '":', '5');
+    const hrs = parseFloat(hrsStr);
+    if(!hrs || hrs <= 0) return;
+    goals[trimmed] = hrs;
+    saveGoals();
+    renderGoals();
+  };
+
+  // ---------- personal records ----------
+  function computePRs(){
+    const byTag = {};
+    sessions.forEach(s => {
+      const tag = s.subject || "Untagged";
+      if(!byTag[tag]) byTag[tag] = { longest: 0, trackerBest: {} };
+      if(s.durationSec > byTag[tag].longest) byTag[tag].longest = s.durationSec;
+      (s.trackers || []).forEach(t => {
+        if(t.count > 0){
+          const rate = (s.durationSec/60) / t.count;
+          const existing = byTag[tag].trackerBest[t.name];
+          if(!existing || rate < existing.rate){
+            byTag[tag].trackerBest[t.name] = { rate, unit: t.unit };
+          }
+        }
+      });
+    });
+    return byTag;
+  }
+
+  function renderPRs(){
+    const feed = $('pr-feed');
+    feed.innerHTML = "";
+    const byTag = computePRs();
+    const tagNames = Object.keys(byTag);
+    if(tagNames.length === 0){
+      const empty = document.createElement('div');
+      empty.className = "empty-state";
+      empty.innerHTML = "No records yet.<br/>Finish a session to start setting PRs.";
+      feed.appendChild(empty);
+      return;
+    }
+    tagNames.sort((a,b) => byTag[b].longest - byTag[a].longest).forEach(tag => {
+      const rec = byTag[tag];
+      const trackerRows = Object.keys(rec.trackerBest).map(name => {
+        const b = rec.trackerBest[name];
+        return `<div class="pr-row"><span class="k">Best pace \u00b7 ${escapeHtml(name)}</span><span class="v">${b.rate.toFixed(1)} min/${escapeHtml(b.unit)}</span></div>`;
+      }).join("");
+      const card = document.createElement('div');
+      card.className = "pr-card";
+      card.innerHTML = `
+        <div class="tag">${escapeHtml(tag)}</div>
+        <div class="pr-row"><span class="k">Longest session</span><span class="v">${fmtShort(rec.longest)}</span></div>
+        ${trackerRows}
+      `;
+      feed.appendChild(card);
+    });
+  }
+
+  function renderInsights(){
+    renderHeatmap();
+    renderGoals();
+    renderPRs();
+  }
+
   // ---------- init ----------
   loadSubjects();
   loadTrackers();
   loadSessions();
+  loadGoals();
   renderHome();
 })();
 </script>

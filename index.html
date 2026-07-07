@@ -54,67 +54,6 @@
     font-weight:600;
   }
 
-  /* ---------- LOGIN ---------- */
-  .login-screen{
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:40px 30px;
-    text-align:center;
-  }
-  .login-mark{
-    width:64px;height:64px;
-    border-radius:20px;
-    background: linear-gradient(155deg, var(--brass-bright), var(--brass) 60%, #9c7a41);
-    display:flex;align-items:center;justify-content:center;
-    font-size:28px;
-    margin-bottom:20px;
-    box-shadow: 0 8px 24px rgba(201,160,92,0.25);
-  }
-  .login-screen h1{ font-size:24px; margin:0 0 8px; }
-  .login-screen p{ color:var(--text-faint); font-size:13.5px; line-height:1.5; margin:0 0 32px; max-width:300px; }
-  .google-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    width:100%;
-    max-width:300px;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid var(--hairline-strong);
-    background:#fff;
-    color:#3c4043;
-    font-size:14.5px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  .google-btn svg{ width:18px;height:18px; flex-shrink:0; }
-  .login-note{
-    margin-top:18px;
-    font-size:11px;
-    color:var(--text-faint);
-    max-width:280px;
-    line-height:1.5;
-  }
-  .account-pill{
-    display:flex; align-items:center; gap:8px;
-    background:var(--card);
-    border:1px solid var(--hairline);
-    padding:5px 10px 5px 5px;
-    border-radius:100px;
-    cursor:pointer;
-  }
-  .account-avatar{
-    width:24px;height:24px;border-radius:50%;
-    background:var(--brass); color:#1A130A;
-    display:flex;align-items:center;justify-content:center;
-    font-size:11px; font-weight:800; flex-shrink:0;
-  }
-  .account-pill span{ font-size:12px; color:var(--text-dim); font-weight:600; }
-
   /* ---------- HOME ---------- */
   .home-header{
     padding:8px 20px 8px;
@@ -128,7 +67,6 @@
     font-weight:700;
     letter-spacing:-0.02em;
   }
-  .home-header-right{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
   .streak-pill{
     display:flex;
     align-items:center;
@@ -141,6 +79,7 @@
     font-weight:600;
     color:var(--brass-bright);
     white-space:nowrap;
+    margin-top:2px;
   }
 
   .dial-wrap{
@@ -287,7 +226,10 @@
     display:flex;
     flex-direction:column;
     gap:8px;
+    cursor:pointer;
+    position:relative;
   }
+  .session-card:active{ background:var(--card-2); }
   .session-card-top{ display:flex; gap:12px; align-items:center; }
   .session-badge{
     width:42px;height:42px;
@@ -324,6 +266,19 @@
     color:var(--text-dim);
     flex-shrink:0;
   }
+  .session-del{
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1px solid var(--hairline-strong);
+    background:var(--card-2);
+    color:var(--text-faint);
+    font-size:13px;
+    font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    cursor:pointer;
+  }
+  .session-del:active{ background:var(--track-red); color:#fff; border-color:var(--track-red); }
   .tracker-tags{ display:flex; flex-wrap:wrap; gap:6px; }
   .tracker-tag{
     font-size:10.5px;
@@ -352,6 +307,18 @@
     color:var(--text-faint);
     font-weight:700;
     margin:0 2px 8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .field-label .edit-toggle{
+    text-transform:none;
+    letter-spacing:0;
+    font-weight:500;
+    color:var(--text-faint);
+    text-decoration:underline;
+    cursor:pointer;
+    font-size:11px;
   }
   textarea#intention{
     width:100%;
@@ -382,6 +349,9 @@
     font-size:13px;
     font-weight:600;
     cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
   }
   .chip.selected{
     background:var(--brass-dim);
@@ -396,6 +366,12 @@
   .chip.add-chip{
     color:var(--text-faint);
     border-style:dashed;
+  }
+  .chip-x{
+    color:var(--track-red);
+    font-weight:800;
+    font-size:12px;
+    line-height:1;
   }
   .primary-btn{
     width:100%;
@@ -531,31 +507,51 @@
     justify-content:center;
     margin-bottom:20px;
   }
-  .tracker-btn{
-    position:relative;
+  .tracker-ctrl{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:2px;
-    padding:10px 14px;
+    gap:6px;
+    padding:10px 12px;
     border-radius:16px;
     border:1px solid rgba(127,166,135,0.35);
     background:rgba(127,166,135,0.12);
-    color:var(--good);
-    font-size:11px;
+    min-width:96px;
+  }
+  .tracker-ctrl .tlabel{
+    font-size:10.5px;
     font-weight:700;
     letter-spacing:.02em;
-    cursor:pointer;
-    min-width:76px;
-    overflow:visible;
+    color:var(--good);
+    text-align:center;
   }
-  .tracker-btn .tcount{
+  .tracker-ctrl .trow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .tracker-pm{
+    width:28px;height:28px;
+    border-radius:50%;
+    border:none;
+    background:var(--card-2);
+    color:var(--text);
+    font-size:16px;
+    font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .tracker-pm.plus{ background:var(--good); color:#132018; }
+  .tracker-pm:active{ transform:scale(.9); }
+  .tcount{
     font-family: ui-monospace, monospace;
     font-size:20px;
     font-weight:800;
     color:var(--text);
+    min-width:24px;
+    text-align:center;
   }
-  .tracker-btn:active{ transform:scale(.95); }
   .pusher-row{
     display:flex;
     gap:22px;
@@ -592,7 +588,7 @@
     border-radius:2px;
   }
 
-  /* ---------- SUMMARY ---------- */
+  /* ---------- SUMMARY / DETAIL ---------- */
   .summary-screen{ padding:30px 24px 24px; text-align:center; }
   .summary-badge{
     width:64px;height:64px;
@@ -658,6 +654,22 @@
     border-color:var(--brass);
     color:#1A130A;
   }
+  .detail-header{
+    padding:0 22px 8px;
+  }
+  .detail-back{
+    color:var(--text-faint);
+    font-size:13px;
+    cursor:pointer;
+    margin-bottom:14px;
+    display:inline-block;
+  }
+  .detail-stat-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    padding:0 22px 20px;
+  }
 
   ::-webkit-scrollbar{ display:none; }
 </style>
@@ -665,32 +677,15 @@
 <body>
 <div id="app">
 
-  <!-- ============ LOGIN ============ -->
-  <div class="screen active" id="screen-login">
-    <div class="login-screen">
-      <div class="login-mark">🔒</div>
-      <h1>Locked In</h1>
-      <p>Sign in to save your sessions to your account and sync your streak, tags, and tracking history.</p>
-      <button class="google-btn" id="btn-google-signin">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.4C29.4 34.9 26.8 36 24 36c-5.2 0-9.6-3.3-11.2-8l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.4C41.5 35.6 44 30.2 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
-        Continue with Google
-      </button>
-      <div class="login-note">This runs inside a sandboxed artifact, so it can't complete real Google OAuth — it just captures your name/email to label your data. Everything is saved with Anthropic's artifact storage, not Google Drive.</div>
-    </div>
-  </div>
-
   <!-- ============ HOME ============ -->
-  <div class="screen" id="screen-home">
+  <div class="screen active" id="screen-home">
     <div class="top-spacer"></div>
     <div class="home-header">
       <div>
         <div class="eyebrow" id="home-date">—</div>
         <h1>Locked In</h1>
       </div>
-      <div class="home-header-right">
-        <div class="account-pill" id="account-pill"><div class="account-avatar" id="account-avatar">?</div><span id="account-name">—</span></div>
-        <div class="streak-pill" id="streak-pill">🔥 0 day streak</div>
-      </div>
+      <div class="streak-pill" id="streak-pill">🔥 0 day streak</div>
     </div>
 
     <div class="dial-wrap">
@@ -731,10 +726,10 @@
       <div class="field-label">Intention</div>
       <textarea id="intention" placeholder="e.g. Finish epsilon-delta practice set"></textarea>
 
-      <div class="field-label" style="margin-top:20px;">Tag</div>
+      <div class="field-label" style="margin-top:20px;"><span>Tag</span><span class="edit-toggle" id="tag-edit-toggle">edit</span></div>
       <div class="chip-row" id="chip-row"></div>
 
-      <div class="field-label">Tracking (optional)</div>
+      <div class="field-label"><span>Tracking (optional)</span><span class="edit-toggle" id="tracker-edit-toggle">edit</span></div>
       <div class="chip-row" id="tracker-chip-row"></div>
 
       <button class="primary-btn" id="btn-start-session" disabled>Turn on camera & begin</button>
@@ -775,10 +770,26 @@
       <div class="summary-sub">time on task</div>
       <div id="pr-banner-slot"></div>
       <div id="tracker-summary-slot"></div>
-      <div class="field-label" style="text-align:center;">How locked in were you?</div>
+      <div class="field-label" style="text-align:center; justify-content:center;">How locked in were you?</div>
       <div class="rating-row" id="rating-row"></div>
       <button class="primary-btn" id="btn-save">Save session</button>
     </div>
+  </div>
+
+  <!-- ============ SESSION DETAIL ============ -->
+  <div class="screen" id="screen-detail">
+    <div class="top-spacer"></div>
+    <div class="detail-header">
+      <span class="detail-back" id="btn-detail-back">← Back</span>
+    </div>
+    <div class="summary-screen" style="padding-top:0;">
+      <div class="summary-sub" id="detail-meta"></div>
+      <h2 id="detail-intention" style="margin:0 0 6px;"></h2>
+      <div class="summary-time" id="detail-time">0:00:00</div>
+      <div class="summary-sub">time on task</div>
+    </div>
+    <div class="detail-stat-grid" id="detail-stat-grid"></div>
+    <div style="padding:0 24px;" id="detail-tracker-slot"></div>
   </div>
 
 </div>
@@ -793,7 +804,6 @@
   ];
   const COLORS = ["#C9A05C","#E4C07E","#B8483D","#7FA687","#EDEAE2"];
 
-  let profile = null;
   let subjects = [];
   let trackers = [];
   let sessions = [];
@@ -809,6 +819,9 @@
   let selectedRating = 0;
   let pendingDuration = 0;
   let activeTrackers = []; // {id, name, unit, count, events:[sec]}
+  let tagEditMode = false;
+  let trackerEditMode = false;
+  let detailSessionId = null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -817,25 +830,31 @@
     $(id).classList.add("active");
   }
 
-  // ---------- storage helpers (Anthropic artifact persistent storage) ----------
-  // ---------- storage helpers (Standard Browser Local Storage) ----------
-async function storageGet(key, fallback){try{const res = localStorage.getItem(key); if(!res) return fallback; return JSON.parse(res); }catch(e){return fallback; } }
-async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringify(value)); }catch(e){console.error("storage set failed", key, e); } }
+  // ---------- storage helpers (plain localStorage, not the artifact key-value store) ----------
+  function storageGet(key, fallback){
+    try{
+      const res = localStorage.getItem(key);
+      if(!res) return fallback;
+      return JSON.parse(res);
+    }catch(e){ return fallback; }
+  }
+  function storageSet(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }
+    catch(e){ console.error("storage set failed", key, e); }
+  }
 
-  async function loadProfile(){ profile = await storageGet('li_profile', null); }
-  async function saveProfile(){ await storageSet('li_profile', profile); }
-  async function loadSubjects(){
-    subjects = await storageGet('li_subjects', null);
-    if(!subjects || !subjects.length){ subjects = DEFAULT_SUBJECTS.slice(); await saveSubjects(); }
+  function loadSubjects(){
+    subjects = storageGet('li_subjects', null);
+    if(!subjects || !subjects.length){ subjects = DEFAULT_SUBJECTS.slice(); saveSubjects(); }
   }
-  async function saveSubjects(){ await storageSet('li_subjects', subjects); }
-  async function loadTrackers(){
-    trackers = await storageGet('li_trackers', null);
-    if(!trackers || !trackers.length){ trackers = DEFAULT_TRACKERS.slice(); await saveTrackers(); }
+  function saveSubjects(){ storageSet('li_subjects', subjects); }
+  function loadTrackers(){
+    trackers = storageGet('li_trackers', null);
+    if(!trackers || !trackers.length){ trackers = DEFAULT_TRACKERS.slice(); saveTrackers(); }
   }
-  async function saveTrackers(){ await storageSet('li_trackers', trackers); }
-  async function loadSessions(){ sessions = await storageGet('li_sessions', []); }
-  async function saveSessions(){ await storageSet('li_sessions', sessions); }
+  function saveTrackers(){ storageSet('li_trackers', trackers); }
+  function loadSessions(){ sessions = storageGet('li_sessions', []); }
+  function saveSessions(){ storageSet('li_sessions', sessions); }
 
   // ---------- time helpers ----------
   function fmtHMS(totalSec){
@@ -864,30 +883,6 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
     div.textContent = str;
     return div.innerHTML;
   }
-
-  // ---------- LOGIN ----------
-  function renderAccountPill(){
-    if(!profile) return;
-    $('account-avatar').textContent = (profile.name||"?").trim().charAt(0).toUpperCase() || "?";
-    $('account-name').textContent = profile.name || profile.email || "Account";
-  }
-  $('btn-google-signin').onclick = async () => {
-    const name = prompt("Name (for your account):", "");
-    if(name === null) return;
-    const email = prompt("Email:", "");
-    if(email === null) return;
-    profile = { name: name.trim() || "You", email: email.trim() };
-    await saveProfile();
-    renderAccountPill();
-    showScreen('screen-home');
-    renderHome();
-  };
-  $('account-pill').onclick = async () => {
-    if(confirm("Sign out of " + (profile ? (profile.name||profile.email) : "account") + "?")){
-      profile = null;
-      showScreen('screen-login');
-    }
-  };
 
   // ---------- stats ----------
   function computeStats(){
@@ -956,7 +951,6 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
 
   // ---------- home render ----------
   function renderHome(){
-    renderAccountPill();
     const stats = computeStats();
     $('home-date').textContent = new Date().toLocaleDateString(undefined, {weekday:'long', month:'short', day:'numeric'});
     $('streak-pill').textContent = "🔥 " + stats.streak + " day" + (stats.streak===1?"":"s") + " streak";
@@ -1005,74 +999,124 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
               <div class="meta">${dateStr} · ${timeStr}${s.rating ? " · " + "★".repeat(s.rating) : ""}</div>
             </div>
             <div class="session-dur">${fmtShort(s.durationSec)}</div>
+            <div class="session-del" data-id="${s.id}">✕</div>
           </div>
           ${trackerTagsHtml}
         `;
+        card.querySelector('.session-del').onclick = (e) => {
+          e.stopPropagation();
+          if(confirm("Delete this session?")){
+            sessions = sessions.filter(x => x.id !== s.id);
+            saveSessions();
+            renderHome();
+          }
+        };
+        card.onclick = () => openDetail(s.id);
         feed.appendChild(card);
       });
     }
   }
 
-  // ---------- setup screen ----------
+  // ---------- setup screen: tags ----------
   function renderChips(){
     const row = $('chip-row');
     row.innerHTML = "";
     subjects.forEach(sub => {
       const chip = document.createElement('div');
-      chip.className = "chip" + (sub === currentSubject ? " selected" : "");
-      chip.textContent = sub;
-      chip.onclick = () => { currentSubject = sub; renderChips(); };
+      chip.className = "chip" + (sub === currentSubject && !tagEditMode ? " selected" : "");
+      if(tagEditMode){
+        chip.innerHTML = `<span>${escapeHtml(sub)}</span><span class="chip-x">✕</span>`;
+        chip.onclick = () => {
+          if(confirm('Delete tag "' + sub + '"?')){
+            subjects = subjects.filter(x => x !== sub);
+            if(currentSubject === sub) currentSubject = subjects[0] || null;
+            saveSubjects();
+            renderChips();
+          }
+        };
+      } else {
+        chip.textContent = sub;
+        chip.onclick = () => { currentSubject = sub; renderChips(); };
+      }
       row.appendChild(chip);
     });
-    const addChip = document.createElement('div');
-    addChip.className = "chip add-chip";
-    addChip.textContent = "+ New tag";
-    addChip.onclick = async () => {
-      const name = prompt("Name this tag:", "");
-      if(name && name.trim()){
-        const trimmed = name.trim();
-        if(!subjects.includes(trimmed)) subjects.push(trimmed);
-        currentSubject = trimmed;
-        await saveSubjects();
-        renderChips();
-      }
-    };
-    row.appendChild(addChip);
+    if(!tagEditMode){
+      const addChip = document.createElement('div');
+      addChip.className = "chip add-chip";
+      addChip.textContent = "+ New tag";
+      addChip.onclick = () => {
+        const name = prompt("Name this tag:", "");
+        if(name && name.trim()){
+          const trimmed = name.trim();
+          if(!subjects.includes(trimmed)) subjects.push(trimmed);
+          currentSubject = trimmed;
+          saveSubjects();
+          renderChips();
+        }
+      };
+      row.appendChild(addChip);
+    }
   }
+  $('tag-edit-toggle').onclick = () => {
+    tagEditMode = !tagEditMode;
+    $('tag-edit-toggle').textContent = tagEditMode ? "done" : "edit";
+    renderChips();
+  };
 
+  // ---------- setup screen: trackers ----------
   function renderTrackerChips(){
     const row = $('tracker-chip-row');
     row.innerHTML = "";
     trackers.forEach(t => {
       const chip = document.createElement('div');
-      chip.className = "chip tracker-chip" + (selectedTrackerIds.includes(t.id) ? " selected" : "");
-      chip.textContent = t.name;
-      chip.onclick = () => {
-        if(selectedTrackerIds.includes(t.id)){
-          selectedTrackerIds = selectedTrackerIds.filter(id => id !== t.id);
-        } else {
-          selectedTrackerIds.push(t.id);
-        }
-        renderTrackerChips();
-      };
+      const isSelected = selectedTrackerIds.includes(t.id);
+      chip.className = "chip tracker-chip" + (isSelected && !trackerEditMode ? " selected" : "");
+      if(trackerEditMode){
+        chip.innerHTML = `<span>${escapeHtml(t.name)}</span><span class="chip-x">✕</span>`;
+        chip.onclick = () => {
+          if(confirm('Delete tracker "' + t.name + '"?')){
+            trackers = trackers.filter(x => x.id !== t.id);
+            selectedTrackerIds = selectedTrackerIds.filter(id => id !== t.id);
+            saveTrackers();
+            renderTrackerChips();
+          }
+        };
+      } else {
+        chip.textContent = t.name;
+        chip.onclick = () => {
+          if(isSelected){
+            selectedTrackerIds = selectedTrackerIds.filter(id => id !== t.id);
+          } else {
+            selectedTrackerIds.push(t.id);
+          }
+          renderTrackerChips();
+        };
+      }
       row.appendChild(chip);
     });
-    const addChip = document.createElement('div');
-    addChip.className = "chip add-chip";
-    addChip.textContent = "+ New tracker";
-    addChip.onclick = async () => {
-      const name = prompt("Track what? (e.g. Flashcards reviewed)", "");
-      if(name && name.trim()){
-        const unit = prompt("Unit name (e.g. flashcard):", name.trim().toLowerCase().replace(/s$/,'')) || "item";
-        const id = "t_" + Date.now();
-        trackers.push({id, name: name.trim(), unit: unit.trim() || "item"});
-        selectedTrackerIds.push(id);
-        await saveTrackers();
-        renderTrackerChips();
-      }
-    };
-    row.appendChild(addChip);
+    if(!trackerEditMode){
+      const addChip = document.createElement('div');
+      addChip.className = "chip add-chip";
+      addChip.textContent = "+ New tracker";
+      addChip.onclick = () => {
+        const name = prompt("Track what? (e.g. Flashcards reviewed)", "");
+        if(name && name.trim()){
+          const unit = prompt("Unit name (e.g. flashcard):", name.trim().toLowerCase().replace(/s$/,'')) || "item";
+          const id = "t_" + Date.now();
+          trackers.push({id, name: name.trim(), unit: unit.trim() || "item"});
+          selectedTrackerIds.push(id);
+          saveTrackers();
+          renderTrackerChips();
+        }
+      };
+      row.appendChild(addChip);
+    }
   }
+  $('tracker-edit-toggle').onclick = () => {
+    trackerEditMode = !trackerEditMode;
+    $('tracker-edit-toggle').textContent = trackerEditMode ? "done" : "edit";
+    renderTrackerChips();
+  };
 
   $('btn-goto-setup').onclick = () => {
     currentIntention = "";
@@ -1080,6 +1124,8 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
     $('btn-start-session').disabled = true;
     if(!currentSubject) currentSubject = subjects[0];
     selectedTrackerIds = [];
+    tagEditMode = false; $('tag-edit-toggle').textContent = "edit";
+    trackerEditMode = false; $('tracker-edit-toggle').textContent = "edit";
     renderChips();
     renderTrackerChips();
     showScreen('screen-setup');
@@ -1093,11 +1139,11 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
   });
 
   // ---------- clear data ----------
-  $('btn-clear').onclick = async () => {
+  $('btn-clear').onclick = () => {
     if(sessions.length === 0) return;
     if(confirm("Delete all logged study sessions? This can't be undone.")){
       sessions = [];
-      await saveSessions();
+      saveSessions();
       renderHome();
     }
   };
@@ -1144,16 +1190,30 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
     const row = $('tracker-btn-row');
     row.innerHTML = "";
     activeTrackers.forEach(t => {
-      const btn = document.createElement('button');
-      btn.className = "tracker-btn";
-      btn.innerHTML = `<span class="tcount" id="tc-${t.id}">${t.count}</span><span>${escapeHtml(t.name)}</span>`;
-      btn.onclick = () => {
+      const ctrl = document.createElement('div');
+      ctrl.className = "tracker-ctrl";
+      ctrl.innerHTML = `
+        <div class="tlabel">${escapeHtml(t.name)}</div>
+        <div class="trow">
+          <button class="tracker-pm minus" id="tm-${t.id}">−</button>
+          <span class="tcount" id="tc-${t.id}">${t.count}</span>
+          <button class="tracker-pm plus" id="tp-${t.id}">+</button>
+        </div>
+      `;
+      row.appendChild(ctrl);
+      $('tp-' + t.id).onclick = (e) => {
         t.count++;
         t.events.push(currentElapsedSec());
         $('tc-' + t.id).textContent = t.count;
-        burstConfetti(btn);
+        burstConfetti(e.currentTarget);
       };
-      row.appendChild(btn);
+      $('tm-' + t.id).onclick = () => {
+        if(t.count > 0){
+          t.count--;
+          t.events.pop();
+          $('tc-' + t.id).textContent = t.count;
+        }
+      };
     });
   }
 
@@ -1227,22 +1287,21 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
     showSummary();
   };
 
-  // ---------- summary: tracker charts ----------
-  function trackerSparkline(t){
+  // ---------- charts ----------
+  function sparklineSvg(events, durationSec){
     const w = 260, h = 46;
-    if(t.events.length === 0){
+    if(!events || events.length === 0){
       return `<svg width="${w}" height="${h}"></svg>`;
     }
-    const maxT = Math.max(pendingDuration, 1);
-    const maxC = t.events.length;
-    const pts = t.events.map((sec, i) => {
+    const maxT = Math.max(durationSec, 1);
+    const maxC = events.length;
+    const pts = events.map((sec, i) => {
       const x = (sec / maxT) * (w-6) + 3;
       const y = h - ((i+1) / maxC) * (h-6) - 3;
       return x.toFixed(1) + "," + y.toFixed(1);
     });
     const path = "M3," + (h-3) + " L" + pts.join(" L");
     return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-      <polyline points="${path.replace('M','').replace(/L/g,'')}" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
       <path d="${path}" fill="none" stroke="#7FA687" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
   }
@@ -1275,7 +1334,7 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
           <span class="rate">${rate} min / ${escapeHtml(t.unit)}</span>
         </div>
         <div class="tracker-summary-count">${t.count}</div>
-        ${trackerSparkline(t)}
+        ${sparklineSvg(t.events, pendingDuration)}
       `;
       trackerSlot.appendChild(card);
     });
@@ -1295,7 +1354,7 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
     }
   }
 
-  $('btn-save').onclick = async () => {
+  $('btn-save').onclick = () => {
     sessions.push({
       id: Date.now(),
       startedAt: new Date(Date.now() - pendingDuration*1000).toISOString(),
@@ -1307,25 +1366,70 @@ async function storageSet(key, value){try{localStorage.setItem(key, JSON.stringi
         id: t.id, name: t.name, unit: t.unit, count: t.count, events: t.events
       }))
     });
-    await saveSessions();
+    saveSessions();
     renderHome();
     showScreen('screen-home');
   };
 
-  // ---------- init ----------
-  (async function init(){
-    await loadProfile();
-    await loadSubjects();
-    await loadTrackers();
-    await loadSessions();
-    if(profile){
-      renderAccountPill();
-      showScreen('screen-home');
-      renderHome();
+  // ---------- session detail view ----------
+  function openDetail(id){
+    const s = sessions.find(x => x.id === id);
+    if(!s) return;
+    detailSessionId = id;
+    const d = new Date(s.startedAt);
+    const dateStr = d.toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'});
+    const timeStr = d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+
+    $('detail-meta').textContent = (s.subject || "") + " · " + dateStr + " · " + timeStr;
+    $('detail-intention').textContent = "\u201C" + (s.intention || "Study session") + "\u201D";
+    $('detail-time').textContent = fmtHMS(s.durationSec);
+
+    const grid = $('detail-stat-grid');
+    grid.innerHTML = "";
+    const statPairs = [
+      ["Duration", fmtShort(s.durationSec)],
+      ["Rating", s.rating ? "★".repeat(s.rating) : "—"],
+      ["Trackers used", (s.trackers||[]).length]
+    ];
+    statPairs.forEach(([k,v]) => {
+      const card = document.createElement('div');
+      card.className = "stat-card";
+      card.innerHTML = `<div class="v">${v}</div><div class="k">${k}</div>`;
+      grid.appendChild(card);
+    });
+
+    const slot = $('detail-tracker-slot');
+    slot.innerHTML = "";
+    if(!s.trackers || s.trackers.length === 0){
+      const empty = document.createElement('div');
+      empty.className = "empty-state";
+      empty.textContent = "No tracking data logged for this session.";
+      slot.appendChild(empty);
     } else {
-      showScreen('screen-login');
+      s.trackers.forEach(t => {
+        const rate = t.count>0 ? (s.durationSec/60/t.count).toFixed(1) : "—";
+        const card = document.createElement('div');
+        card.className = "tracker-summary-card";
+        card.innerHTML = `
+          <div class="tracker-summary-head">
+            <span class="name">${escapeHtml(t.name)}</span>
+            <span class="rate">${rate} min / ${escapeHtml(t.unit)}</span>
+          </div>
+          <div class="tracker-summary-count">${t.count}</div>
+          ${sparklineSvg(t.events, s.durationSec)}
+        `;
+        slot.appendChild(card);
+      });
     }
-  })();
+    showScreen('screen-detail');
+  }
+  $('btn-detail-back').onclick = () => showScreen('screen-home');
+
+  // ---------- init ----------
+  loadSubjects();
+  loadTrackers();
+  loadSessions();
+  renderHome();
 })();
 </script>
 </body>

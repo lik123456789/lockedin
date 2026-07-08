@@ -1434,7 +1434,7 @@
 
 <script>
 (function(){
-  const DEFAULT_SUBJECTS = ["Diff Eq","Pchem","OChem II","Linear Algebra","Modern Physics","Creative Writing"];
+  const DEFAULT_SUBJECTS = ["DifEq", "LinAlg","MVC","E&M"];
   const DEFAULT_TRACKERS = [
     {id:"problems", name:"Problems solved", unit:"problem"},
     {id:"pages", name:"Pages read", unit:"page"},
@@ -1526,7 +1526,7 @@
   });
 
   $('tab-home').onclick = () => { showScreen('screen-home'); renderHome(); };
-  $('tab-insights').onclick = () => { showScreen('screen-insights'); renderInsights(); 
+  $('tab-insights').onclick = () => { showScreen('screen-insights'); renderInsights(); };
   $('tab-logs').onclick = () => { showScreen('screen-logs'); renderLogs(); };
 
   // ---------- storage helpers (plain localStorage, not the artifact key-value store) ----------
@@ -2711,7 +2711,7 @@ document.addEventListener('change', (e) => {
 
   // ---------- init ----------
   initAuth();
-}
+})();
 </script>
 </body>
 </html>

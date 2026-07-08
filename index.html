@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-  :root{
+  :root{x
     --bg:#12181C;
     --bg-elev:#171F23;
     --card:#1D262B;
@@ -34,16 +34,19 @@
     color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     height:100%;
-    overflow-x:hidden;
-    overscroll-behavior-y:none;
+    width:100%;
+    position:fixed;
+    overflow:hidden;
     -webkit-tap-highlight-color: transparent;
   }
   #app{
     max-width:460px;
     margin:0 auto;
-    min-height:100vh;
+    height:100%;
     position:relative;
     padding-bottom:90px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
   }
   .top-spacer{ height: var(--top-clear); width:100%; }
   .screen{ display:none; animation: fadeIn .35s ease both; }
@@ -824,8 +827,8 @@
     border-top:1px solid rgba(237,234,226,0.06);
     display:none;
     z-index:40;
-    padding:5px 20px 5px;
-    padding-bottom: max(5px, env(safe-area-inset-bottom, 0px));
+    padding:5px 20px;
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 5px));
     box-shadow: 0 0 0 100vh rgba(23,31,35,0.92);
     clip-path: inset(0 0 -100vh 0);
   }

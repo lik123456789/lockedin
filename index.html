@@ -619,6 +619,16 @@
     padding:0 54px;
     z-index:3;
   }
+  .tap-hint{
+    position:absolute;
+    top: calc(var(--top-clear) + 46px);
+    left:0; right:0;
+    text-align:center;
+    font-size:11px;
+    color:var(--text-faint);
+    z-index:3;
+    padding:0 54px;
+  }
   .session-bottom{
     position:absolute;
     left:0; right:0; bottom:0;
@@ -652,58 +662,52 @@
     font-weight:600;
     margin-bottom:18px;
   }
-  .tracker-btn-row{
+  .tracker-toggle-row{
     display:flex;
     flex-wrap:wrap;
-    gap:10px;
+    gap:8px;
     justify-content:center;
-    margin-bottom:20px;
+    margin-bottom:10px;
+    max-width:100%;
   }
-  .tracker-ctrl{
+  .tracker-toggle{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:6px;
-    padding:10px 12px;
-    border-radius:16px;
-    border:1px solid rgba(127,166,135,0.35);
-    background:rgba(127,166,135,0.12);
-    min-width:96px;
-  }
-  .tracker-ctrl .tlabel{
-    font-size:10.5px;
-    font-weight:700;
-    letter-spacing:.02em;
-    color:var(--good);
-    text-align:center;
-  }
-  .tracker-ctrl .trow{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-  .tracker-pm{
-    width:28px;height:28px;
-    border-radius:50%;
-    border:none;
-    background:var(--card-2);
-    color:var(--text);
-    font-size:16px;
-    font-weight:800;
-    display:flex;align-items:center;justify-content:center;
+    gap:2px;
+    padding:9px 14px;
+    border-radius:14px;
+    border:1px solid var(--hairline-strong);
+    background:rgba(35,45,51,0.7);
+    backdrop-filter: blur(6px);
     cursor:pointer;
-    flex-shrink:0;
+    min-width:78px;
   }
-  .tracker-pm.plus{ background:var(--good); color:#132018; }
-  .tracker-pm:active{ transform:scale(.9); }
-  .tcount{
+  .tracker-toggle .tg-name{
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--text-dim);
+  }
+  .tracker-toggle .tg-count{
     font-family: ui-monospace, monospace;
-    font-size:20px;
+    font-size:15px;
     font-weight:800;
     color:var(--text);
-    min-width:24px;
-    text-align:center;
   }
+  .tracker-toggle.active{
+    background:rgba(127,166,135,0.18);
+    border-color:var(--good);
+  }
+  .tracker-toggle.active .tg-name{ color:var(--good); }
+  .tracker-toggle.active .tg-count{ color:var(--good); }
+  .tap-count-hint{
+    font-size:11px;
+    color:var(--text-faint);
+    margin-bottom:16px;
+    text-align:center;
+    line-height:1.4;
+  }
+  .tap-count-hint b{ color:var(--good); font-weight:700; }
   .pusher-row{
     display:flex;
     gap:22px;
@@ -740,6 +744,73 @@
     border-radius:2px;
   }
 
+  /* ---------- quick-capture overlay (tap anywhere to log) ---------- */
+  .quick-capture-backdrop{
+    position:absolute;
+    inset:0;
+    z-index:8;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    background:rgba(0,0,0,0.35);
+  }
+  .quick-capture-backdrop.visible{ display:flex; animation: fadeIn .18s ease both; }
+  .quick-capture-sheet{
+    width:100%;
+    background:var(--bg-elev);
+    border-top-left-radius:20px;
+    border-top-right-radius:20px;
+    border:1px solid var(--hairline-strong);
+    border-bottom:none;
+    padding:16px 20px calc(var(--bottom-safe) + 18px);
+    animation: sheetUp .25s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .qc-target{
+    font-size:11px;
+    color:var(--good);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:10px;
+    text-align:center;
+  }
+  .qc-input{
+    width:100%;
+    background:var(--card);
+    border:1px solid var(--hairline-strong);
+    border-radius:12px;
+    color:var(--text);
+    font-size:16px;
+    font-family:inherit;
+    padding:13px 14px;
+    resize:none;
+    min-height:52px;
+    line-height:1.4;
+  }
+  .qc-input:focus{ outline:none; border-color:var(--good); }
+  .qc-row{ display:flex; gap:10px; margin-top:10px; }
+  .qc-row button{ flex:1; }
+  .qc-cancel{
+    padding:13px;
+    border-radius:12px;
+    border:1px solid var(--hairline-strong);
+    background:transparent;
+    color:var(--text-dim);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .qc-add{
+    padding:13px;
+    border-radius:12px;
+    border:none;
+    background:var(--good);
+    color:#132018;
+    font-weight:800;
+    font-size:14px;
+    cursor:pointer;
+  }
+
   /* ---------- SUMMARY / DETAIL ---------- */
   .summary-screen{ padding:30px 24px 24px; text-align:center; }
   .summary-badge{
@@ -770,6 +841,57 @@
     font-weight:700;
     margin-bottom:22px;
   }
+  .draft-review-card{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:16px;
+    padding:14px 16px;
+    text-align:left;
+    margin-bottom:12px;
+  }
+  .draft-review-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:10px;
+  }
+  .draft-review-head .name{ font-size:13.5px; font-weight:700; color:var(--good); }
+  .draft-review-head .rate{ font-size:11.5px; color:var(--text-faint); font-family: ui-monospace, monospace; }
+  .draft-entry-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .draft-entry-row .de-time{
+    font-family: ui-monospace, monospace;
+    font-size:10.5px;
+    color:var(--text-faint);
+    width:44px;
+    flex-shrink:0;
+    text-align:right;
+  }
+  .draft-entry-row input{
+    flex:1;
+    background:var(--card-2);
+    border:1px solid var(--hairline-strong);
+    border-radius:10px;
+    color:var(--text);
+    font-size:13.5px;
+    font-family:inherit;
+    padding:9px 11px;
+  }
+  .draft-entry-row input:focus{ outline:none; border-color:var(--good); }
+  .draft-entry-row .de-del{
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1px solid var(--hairline-strong);
+    background:var(--card-2);
+    color:var(--text-faint);
+    font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .draft-review-empty{ font-size:12px; color:var(--text-faint); }
   .tracker-summary-card{
     background:var(--card);
     border:1px solid var(--hairline);
@@ -1137,14 +1259,27 @@
       <div class="scrim-bottom"></div>
       <div class="rec-dot" id="rec-dot"></div>
       <div class="session-intention" id="session-intention-display"></div>
+      <div class="tap-hint" id="tap-hint">Tap anywhere to log a note</div>
       <div class="session-bottom">
         <div class="no-record-tag">Live preview only · nothing is recorded</div>
         <div class="timer-display" id="timer-display">0:00:00</div>
         <div class="timer-sub" id="timer-sub">Studying</div>
-        <div class="tracker-btn-row" id="tracker-btn-row"></div>
+        <div class="tracker-toggle-row" id="tracker-toggle-row"></div>
+        <div class="tap-count-hint" id="tap-count-hint"></div>
         <div class="pusher-row">
           <button class="pusher pause" id="btn-pause">Pause</button>
           <button class="pusher end" id="btn-end">End</button>
+        </div>
+      </div>
+
+      <div class="quick-capture-backdrop" id="quick-capture-backdrop">
+        <div class="quick-capture-sheet">
+          <div class="qc-target" id="qc-target">Logging to —</div>
+          <textarea class="qc-input" id="qc-input" placeholder="Rough note — e.g. 'finished #7' or just tap add"></textarea>
+          <div class="qc-row">
+            <button class="qc-cancel" id="qc-cancel">Cancel</button>
+            <button class="qc-add" id="qc-add">Add</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1160,6 +1295,7 @@
       <div class="summary-time" id="summary-time">0:00:00</div>
       <div class="summary-sub">time on task</div>
       <div id="pr-banner-slot"></div>
+      <div id="draft-review-slot"></div>
       <div id="tracker-summary-slot"></div>
       <div class="field-label" style="text-align:center; justify-content:center;">How locked in were you?</div>
       <div class="rating-row" id="rating-row"></div>
@@ -1322,10 +1458,12 @@
   let mediaStream = null;
   let selectedRating = 0;
   let pendingDuration = 0;
-  let activeTrackers = []; // {id, name, unit, count, events:[sec]}
+  let activeTrackers = []; // {id, name, unit, count, events:[sec], segments:[{start,end,duration}], segmentStart:sec|null}
   let tagEditMode = false;
   let trackerEditMode = false;
   let detailSessionId = null;
+  let currentActiveTrackerId = null; // which tracker taps currently apply to
+  let draftEntries = []; // {id, trackerId, text, elapsedSec}
 
   // phone-lock / pickup tracking
   let sessionActive = false;
@@ -1557,6 +1695,12 @@
     const s = totalSec%60;
     return h + ":" + String(m).padStart(2,'0') + ":" + String(s).padStart(2,'0');
   }
+  function fmtMS(totalSec){
+    totalSec = Math.max(0, Math.floor(totalSec));
+    const m = Math.floor(totalSec/60);
+    const s = totalSec%60;
+    return m + ":" + String(s).padStart(2,'0');
+  }
   function fmtShort(totalSec){
     const h = totalSec/3600;
     if(h >= 1) return h.toFixed(1).replace(/\.0$/,'') + "h";
@@ -1679,7 +1823,8 @@
         let trackerTagsHtml = "";
         if(s.trackers && s.trackers.length){
           trackerTagsHtml = '<div class="tracker-tags">' + s.trackers.map(t => {
-            const rate = t.count>0 ? (s.durationSec/60/t.count).toFixed(1) + " min/" + t.unit : "";
+            const activeSec = t.activeSec != null ? t.activeSec : s.durationSec;
+            const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) + " min/" + t.unit : "";
             return `<span class="tracker-tag">${escapeHtml(t.name)}: ${t.count}${rate ? " · " + rate : ""}</span>`;
           }).join("") + '</div>';
         }
@@ -1872,43 +2017,75 @@
   $('btn-start-session').onclick = async () => {
     $('session-intention-display').textContent = "\u201C" + currentIntention + "\u201D";
     activeTrackers = trackers.filter(t => selectedTrackerIds.includes(t.id))
-                              .map(t => ({id:t.id, name:t.name, unit:t.unit, count:0, events:[]}));
-    renderTrackerButtons();
+                              .map(t => ({id:t.id, name:t.name, unit:t.unit, count:0, events:[], segments:[], segmentStart:null}));
+    draftEntries = [];
+    currentActiveTrackerId = activeTrackers.length ? activeTrackers[0].id : null;
+    renderTrackerToggles();
     showScreen('screen-session');
     resetTimerState();
     startTimer();
     await startCamera();
+    // open the first tracker's timing segment now that the clock has started
+    if(currentActiveTrackerId) openSegment(currentActiveTrackerId);
   };
 
-  function renderTrackerButtons(){
-    const row = $('tracker-btn-row');
+  function findActiveTracker(id){
+    return activeTrackers.find(t => t.id === id) || null;
+  }
+
+  function openSegment(trackerId){
+    const t = findActiveTracker(trackerId);
+    if(!t) return;
+    t.segmentStart = currentElapsedSec();
+  }
+  function closeSegment(trackerId){
+    const t = findActiveTracker(trackerId);
+    if(!t || t.segmentStart == null) return;
+    const end = currentElapsedSec();
+    const duration = Math.max(0, end - t.segmentStart);
+    t.segments.push({start: t.segmentStart, end, duration});
+    t.segmentStart = null;
+  }
+  function trackerActiveSeconds(t){
+    let sum = t.segments.reduce((a,seg)=>a+seg.duration,0);
+    if(t.segmentStart != null){
+      sum += Math.max(0, currentElapsedSec() - t.segmentStart);
+    }
+    return sum;
+  }
+
+  function switchActiveTracker(trackerId){
+    if(trackerId === currentActiveTrackerId) return;
+    if(currentActiveTrackerId) closeSegment(currentActiveTrackerId);
+    currentActiveTrackerId = trackerId;
+    openSegment(trackerId);
+    renderTrackerToggles();
+  }
+
+  function renderTrackerToggles(){
+    const row = $('tracker-toggle-row');
     row.innerHTML = "";
+    if(activeTrackers.length === 0){
+      $('tap-count-hint').textContent = "";
+      $('tap-hint').style.display = "none";
+      return;
+    }
+    $('tap-hint').style.display = "block";
     activeTrackers.forEach(t => {
-      const ctrl = document.createElement('div');
-      ctrl.className = "tracker-ctrl";
-      ctrl.innerHTML = `
-        <div class="tlabel">${escapeHtml(t.name)}</div>
-        <div class="trow">
-          <button class="tracker-pm minus" id="tm-${t.id}">−</button>
-          <span class="tcount" id="tc-${t.id}">${t.count}</span>
-          <button class="tracker-pm plus" id="tp-${t.id}">+</button>
-        </div>
-      `;
-      row.appendChild(ctrl);
-      $('tp-' + t.id).onclick = (e) => {
-        t.count++;
-        t.events.push(currentElapsedSec());
-        $('tc-' + t.id).textContent = t.count;
-        burstConfetti(e.currentTarget);
-      };
-      $('tm-' + t.id).onclick = () => {
-        if(t.count > 0){
-          t.count--;
-          t.events.pop();
-          $('tc-' + t.id).textContent = t.count;
-        }
-      };
+      const el = document.createElement('div');
+      el.className = "tracker-toggle" + (t.id === currentActiveTrackerId ? " active" : "");
+      el.innerHTML = `<span class="tg-name">${escapeHtml(t.name)}</span><span class="tg-count">${t.count}</span>`;
+      el.onclick = (e) => { e.stopPropagation(); switchActiveTracker(t.id); };
+      row.appendChild(el);
     });
+    updateTapHint();
+  }
+
+  function updateTapHint(){
+    const t = findActiveTracker(currentActiveTrackerId);
+    const hint = $('tap-count-hint');
+    if(!t){ hint.textContent = ""; return; }
+    hint.innerHTML = "Tapping the screen logs a rough note to <b>" + escapeHtml(t.name) + "</b> — you'll review and edit everything at the end.";
   }
 
   async function startCamera(){
@@ -1977,6 +2154,8 @@
     clearInterval(timerInterval);
     stopCamera();
     sessionActive = false;
+    if(currentActiveTrackerId) closeSegment(currentActiveTrackerId);
+    closeQuickCapture();
     pendingDuration = Math.floor(currentElapsedSec());
     if(pendingDuration < 5){
       showScreen('screen-home');
@@ -1984,6 +2163,58 @@
     }
     showSummary();
   };
+
+  // ---------- tap-anywhere quick capture ----------
+  function openQuickCapture(){
+    if(activeTrackers.length === 0) return; // nothing to log against
+    if(paused) return;
+    const t = findActiveTracker(currentActiveTrackerId);
+    if(!t) return;
+    $('qc-target').textContent = "Logging to " + t.name;
+    $('qc-input').value = "";
+    $('quick-capture-backdrop').classList.add('visible');
+    setTimeout(()=> $('qc-input').focus(), 200);
+  }
+  function closeQuickCapture(){
+    $('quick-capture-backdrop').classList.remove('visible');
+  }
+  function addDraftEntry(){
+    const t = findActiveTracker(currentActiveTrackerId);
+    if(!t) return;
+    const text = $('qc-input').value.trim();
+    const elapsedSec = Math.floor(currentElapsedSec());
+    t.count++;
+    t.events.push(elapsedSec);
+    draftEntries.push({
+      id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
+      trackerId: t.id,
+      text: text || (t.name + " #" + t.count),
+      elapsedSec
+    });
+    renderTrackerToggles();
+    closeQuickCapture();
+    burstConfetti($('tracker-toggle-row').querySelector('.tracker-toggle.active') || $('timer-display'));
+  }
+
+  // tap anywhere on the camera area, but ignore taps on real controls
+  $('cam-fullscreen').addEventListener('click', (e) => {
+    if(!sessionActive) return;
+    if($('quick-capture-backdrop').classList.contains('visible')) return;
+    const ignoreSelectors = '.pusher, .tracker-toggle, .qc-cancel, .qc-add, .qc-input, .quick-capture-sheet';
+    if(e.target.closest(ignoreSelectors)) return;
+    openQuickCapture();
+  });
+  $('qc-cancel').onclick = (e) => { e.stopPropagation(); closeQuickCapture(); };
+  $('qc-add').onclick = (e) => { e.stopPropagation(); addDraftEntry(); };
+  $('qc-input').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      addDraftEntry();
+    }
+  });
+  $('quick-capture-backdrop').addEventListener('click', (e) => {
+    if(e.target === $('quick-capture-backdrop')) closeQuickCapture();
+  });
 
   // ---------- charts ----------
   function sparklineSvg(events, durationSec){
@@ -2004,6 +2235,88 @@
     </svg>`;
   }
 
+  // ---------- draft review (summary screen) ----------
+  function renderDraftReview(){
+    const slot = $('draft-review-slot');
+    slot.innerHTML = "";
+    if(draftEntries.length === 0) return;
+
+    const heading = document.createElement('div');
+    heading.className = "field-label";
+    heading.style.textAlign = "left";
+    heading.style.justifyContent = "flex-start";
+    heading.style.marginBottom = "10px";
+    heading.textContent = "Review your taps — edit or delete before saving";
+    slot.appendChild(heading);
+
+    activeTrackers.forEach(t => {
+      const entries = draftEntries.filter(d => d.trackerId === t.id);
+      if(entries.length === 0) return;
+      const activeSec = trackerActiveSeconds(t);
+      const rate = entries.length ? (activeSec/60/entries.length).toFixed(1) : "—";
+      const card = document.createElement('div');
+      card.className = "draft-review-card";
+      card.innerHTML = `
+        <div class="draft-review-head">
+          <span class="name">${escapeHtml(t.name)}</span>
+          <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
+        </div>
+        <div class="draft-entry-list" id="draft-list-${t.id}"></div>
+      `;
+      slot.appendChild(card);
+      const list = card.querySelector('.draft-entry-list');
+      entries.forEach(entry => {
+        const row = document.createElement('div');
+        row.className = "draft-entry-row";
+        row.innerHTML = `
+          <span class="de-time">${fmtMS(entry.elapsedSec)}</span>
+          <input type="text" value="${escapeHtml(entry.text)}" data-id="${entry.id}" />
+          <div class="de-del" data-id="${entry.id}">✕</div>
+        `;
+        row.querySelector('input').addEventListener('input', (e) => {
+          const d = draftEntries.find(x => x.id === entry.id);
+          if(d) d.text = e.target.value;
+        });
+        row.querySelector('.de-del').onclick = () => {
+          const idx = draftEntries.findIndex(x => x.id === entry.id);
+          if(idx > -1) draftEntries.splice(idx,1);
+          const tr = findActiveTracker(t.id);
+          if(tr) tr.count = Math.max(0, tr.count - 1);
+          renderDraftReview();
+          renderTrackerSummarySlot();
+        };
+        list.appendChild(row);
+      });
+    });
+  }
+
+  function renderTrackerSummarySlot(){
+    const trackerSlot = $('tracker-summary-slot');
+    trackerSlot.innerHTML = "";
+    if(pickupCount > 0){
+      const pu = document.createElement('div');
+      pu.className = "summary-sub";
+      pu.style.marginTop = "-8px";
+      pu.textContent = "📵 " + pickupCount + " phone pickup" + (pickupCount===1?"":"s") + " mid-session";
+      trackerSlot.appendChild(pu);
+    }
+    activeTrackers.filter(t => t.count > 0).forEach(t => {
+      const activeSec = trackerActiveSeconds(t);
+      const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) : "—";
+      const card = document.createElement('div');
+      card.className = "tracker-summary-card";
+      card.innerHTML = `
+        <div class="tracker-summary-head">
+          <span class="name">${escapeHtml(t.name)}</span>
+          <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
+        </div>
+        <div class="tracker-summary-count">${t.count}</div>
+        ${sparklineSvg(t.events, pendingDuration)}
+      `;
+      trackerSlot.appendChild(card);
+    });
+  }
+
   function showSummary(){
     $('summary-intention').textContent = "\u201C" + currentIntention + "\u201D";
     $('summary-time').textContent = fmtHMS(pendingDuration);
@@ -2020,29 +2333,8 @@
       prSlot.appendChild(banner);
     }
 
-    const trackerSlot = $('tracker-summary-slot');
-    trackerSlot.innerHTML = "";
-    if(pickupCount > 0){
-      const pu = document.createElement('div');
-      pu.className = "summary-sub";
-      pu.style.marginTop = "-8px";
-      pu.textContent = "📵 " + pickupCount + " phone pickup" + (pickupCount===1?"":"s") + " mid-session";
-      trackerSlot.appendChild(pu);
-    }
-    activeTrackers.filter(t => t.count > 0).forEach(t => {
-      const rate = (pendingDuration/60/t.count).toFixed(1);
-      const card = document.createElement('div');
-      card.className = "tracker-summary-card";
-      card.innerHTML = `
-        <div class="tracker-summary-head">
-          <span class="name">${escapeHtml(t.name)}</span>
-          <span class="rate">${rate} min / ${escapeHtml(t.unit)}</span>
-        </div>
-        <div class="tracker-summary-count">${t.count}</div>
-        ${sparklineSvg(t.events, pendingDuration)}
-      `;
-      trackerSlot.appendChild(card);
-    });
+    renderDraftReview();
+    renderTrackerSummarySlot();
 
     showScreen('screen-summary');
   }
@@ -2069,7 +2361,10 @@
       rating: selectedRating || null,
       pickups: pickupCount,
       trackers: activeTrackers.filter(t => t.count > 0).map(t => ({
-        id: t.id, name: t.name, unit: t.unit, count: t.count, events: t.events
+        id: t.id, name: t.name, unit: t.unit, count: t.count, events: t.events,
+        activeSec: Math.round(trackerActiveSeconds(t)),
+        segments: t.segments,
+        notes: draftEntries.filter(d => d.trackerId === t.id).map(d => ({text: d.text, elapsedSec: d.elapsedSec}))
       }))
     });
     saveSessions();
@@ -2113,16 +2408,23 @@
       slot.appendChild(empty);
     } else {
       s.trackers.forEach(t => {
-        const rate = t.count>0 ? (s.durationSec/60/t.count).toFixed(1) : "—";
+        const activeSec = t.activeSec != null ? t.activeSec : s.durationSec;
+        const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) : "—";
+        const notesHtml = (t.notes && t.notes.length)
+          ? '<div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">' +
+              t.notes.map(n => `<div style="font-size:12.5px; color:var(--text-dim);"><span style="font-family:ui-monospace,monospace; color:var(--text-faint); margin-right:8px;">${fmtMS(n.elapsedSec)}</span>${escapeHtml(n.text)}</div>`).join("") +
+            '</div>'
+          : "";
         const card = document.createElement('div');
         card.className = "tracker-summary-card";
         card.innerHTML = `
           <div class="tracker-summary-head">
             <span class="name">${escapeHtml(t.name)}</span>
-            <span class="rate">${rate} min / ${escapeHtml(t.unit)}</span>
+            <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
           </div>
           <div class="tracker-summary-count">${t.count}</div>
           ${sparklineSvg(t.events, s.durationSec)}
+          ${notesHtml}
         `;
         slot.appendChild(card);
       });
@@ -2192,7 +2494,7 @@
     const manualTrackers = trackers.map(t => {
       const el = $('mt-' + t.id);
       const count = el ? (parseInt(el.value, 10) || 0) : 0;
-      return { id: t.id, name: t.name, unit: t.unit, count, events: [] };
+      return { id: t.id, name: t.name, unit: t.unit, count, events: [], activeSec: durationSec };
     }).filter(t => t.count > 0);
 
     sessions.push({
@@ -2319,7 +2621,8 @@
       if(s.durationSec > byTag[tag].longest) byTag[tag].longest = s.durationSec;
       (s.trackers || []).forEach(t => {
         if(t.count > 0){
-          const rate = (s.durationSec/60) / t.count;
+          const activeSec = t.activeSec != null ? t.activeSec : s.durationSec;
+          const rate = (activeSec/60) / t.count;
           const existing = byTag[tag].trackerBest[t.name];
           if(!existing || rate < existing.rate){
             byTag[tag].trackerBest[t.name] = { rate, unit: t.unit };

@@ -11,6 +11,28 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
+  .tracker-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tg-dec, .tg-inc {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline-strong);
+  background: rgba(35,45,51,0.7);
+  backdrop-filter: blur(6px);
+  color: var(--text-dim);
+  font-size: 17px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+.tg-dec:active, .tg-inc:active { background: var(--good); color: #132018; border-color: var(--good); }
+  
   :root{
     --bg:#12181C;
     --bg-elev:#171F23;
@@ -957,8 +979,8 @@
     border-top:1px solid rgba(237,234,226,0.06);
     display:none;
     z-index:40;
-    padding:8px 20px 8px;
-    padding-bottom: max(8px, calc(var(--bottom-safe) + 8px));
+    padding:5px 20px;
+    padding-bottom: max(5px, calc(var(--bottom-safe) + 5px));
   }
   .tab-bar.visible{ display:flex; }
   .tab-btn{
@@ -966,18 +988,18 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:2px;
+    gap:1px;
     background:none;
     border:none;
     color:var(--text-faint);
-    font-size:10px;
+    font-size:9px;
     font-weight:700;
     letter-spacing:.03em;
     text-transform:uppercase;
     cursor:pointer;
-    padding:4px 0;
+    padding:2px 0;
   }
-  .tab-btn .ticon{ font-size:16px; line-height:1; }
+  .tab-btn .ticon{ font-size:13px; line-height:1; }
   .tab-btn.active{ color:var(--brass-bright); }
 
   /* ---------- FAB (add manual session) ---------- */
@@ -1222,12 +1244,6 @@
       <div class="stat-card"><div class="v" id="stat-avg">0m</div><div class="k">Avg Length</div></div>
       <div class="stat-card"><div class="v" id="stat-longest">0m</div><div class="k">Longest</div></div>
     </div>
-
-    <div class="section-title">
-      <span>Recent Sessions</span>
-      <span class="clear-link" id="btn-clear">clear all</span>
-    </div>
-    <div class="feed" id="feed"></div>
   </div>
 
   <!-- ============ SETUP ============ -->
@@ -1269,17 +1285,6 @@
         <div class="pusher-row">
           <button class="pusher pause" id="btn-pause">Pause</button>
           <button class="pusher end" id="btn-end">End</button>
-        </div>
-      </div>
-
-      <div class="quick-capture-backdrop" id="quick-capture-backdrop">
-        <div class="quick-capture-sheet">
-          <div class="qc-target" id="qc-target">Logging to —</div>
-          <textarea class="qc-input" id="qc-input" placeholder="Rough note — e.g. 'finished #7' or just tap add"></textarea>
-          <div class="qc-row">
-            <button class="qc-cancel" id="qc-cancel">Cancel</button>
-            <button class="qc-add" id="qc-add">Add</button>
-          </div>
         </div>
       </div>
     </div>
@@ -1339,12 +1344,33 @@
     <div class="section-title"><span>Personal Records</span></div>
     <div class="feed" id="pr-feed" style="margin-bottom:24px;"></div>
   </div>
-
+<!-- ============ LOGS ============ -->
+<div class="screen" id="screen-logs">
+  <div class="top-spacer"></div>
+  <div class="home-header">
+    <div>
+      <div class="eyebrow">History</div>
+      <h1>Logs</h1>
+    </div>
+  </div>
+  <div style="padding:0 20px 14px; display:flex; gap:8px;">
+    <select class="modal-select" id="log-filter-tag" style="flex:1; font-size:13px; padding:9px 11px;"></select>
+    <select class="modal-select" id="log-sort" style="flex:1; font-size:13px; padding:9px 11px;">
+      <option value="date-desc">Newest first</option>
+      <option value="date-asc">Oldest first</option>
+      <option value="dur-desc">Longest first</option>
+      <option value="dur-asc">Shortest first</option>
+      <option value="rating-desc">Highest rated</option>
+    </select>
+  </div>
+  <div class="feed" id="logs-feed"></div>
+</div>
   <button class="fab visible" id="fab-add-manual" title="Log a past session">+</button>
 
   <div class="tab-bar visible" id="tab-bar">
     <button class="tab-btn active" id="tab-home"><span class="ticon">🏠</span>Home</button>
     <button class="tab-btn" id="tab-insights"><span class="ticon">📊</span>Insights</button>
+    <button class="tab-btn" id="tab-logs"><span class="ticon">📋</span>Logs</button>
   </div>
 
   <!-- ============ MANUAL SESSION MODAL ============ -->
@@ -1477,15 +1503,16 @@
     $(id).classList.add("active");
     const tb = $('tab-bar');
     const fab = $('fab-add-manual');
-    if(id === 'screen-home' || id === 'screen-insights'){
-      tb.classList.add('visible');
-      fab.classList.add('visible');
-      $('tab-home').classList.toggle('active', id === 'screen-home');
-      $('tab-insights').classList.toggle('active', id === 'screen-insights');
-    } else {
-      tb.classList.remove('visible');
-      fab.classList.remove('visible');
-    }
+    if(['screen-home','screen-insights','screen-logs'].includes(id)){
+  tb.classList.add('visible');
+  fab.classList.add('visible');
+  $('tab-home').classList.toggle('active', id === 'screen-home');
+  $('tab-insights').classList.toggle('active', id === 'screen-insights');
+  $('tab-logs').classList.toggle('active', id === 'screen-logs');
+} else {
+  tb.classList.remove('visible');
+  fab.classList.remove('visible');
+}
   }
 
   document.addEventListener('visibilitychange', () => {
@@ -1499,7 +1526,8 @@
   });
 
   $('tab-home').onclick = () => { showScreen('screen-home'); renderHome(); };
-  $('tab-insights').onclick = () => { showScreen('screen-insights'); renderInsights(); };
+  $('tab-insights').onclick = () => { showScreen('screen-insights'); renderInsights(); 
+  $('tab-logs').onclick = () => { showScreen('screen-logs'); renderLogs(); };
 
   // ---------- storage helpers (plain localStorage, not the artifact key-value store) ----------
   function storageGet(key, fallback){
@@ -1798,64 +1826,6 @@
 
     renderDial(stats);
 
-    const feed = $('feed');
-    feed.innerHTML = "";
-    const prevEmpty = document.querySelector('.empty-state');
-    if(prevEmpty) prevEmpty.remove();
-
-    const recent = [...sessions].sort((a,b)=> new Date(b.startedAt) - new Date(a.startedAt)).slice(0,12);
-    if(recent.length === 0){
-      const empty = document.createElement('div');
-      empty.className = "empty-state";
-      empty.innerHTML = "No sessions yet.<br/>Set an intention and start your first one, or tap + to log a past session.";
-      feed.parentElement.insertBefore(empty, feed);
-      feed.style.display = "none";
-    } else {
-      feed.style.display = "flex";
-      recent.forEach(s => {
-        const card = document.createElement('div');
-        card.className = "session-card";
-        const d = new Date(s.startedAt);
-        const timeStr = d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
-        const dateStr = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
-        const tagTxt = (s.subject||"").slice(0,3).toUpperCase();
-
-        let trackerTagsHtml = "";
-        if(s.trackers && s.trackers.length){
-          trackerTagsHtml = '<div class="tracker-tags">' + s.trackers.map(t => {
-            const activeSec = t.activeSec != null ? t.activeSec : s.durationSec;
-            const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) + " min/" + t.unit : "";
-            return `<span class="tracker-tag">${escapeHtml(t.name)}: ${t.count}${rate ? " · " + rate : ""}</span>`;
-          }).join("") + '</div>';
-        }
-
-        card.innerHTML = `
-          <div class="session-card-top">
-            <div class="session-badge">${tagTxt}</div>
-            <div class="session-info">
-              <div class="intention">${escapeHtml(s.intention || "Study session")}</div>
-              <div class="meta">${dateStr} · ${timeStr}${s.rating ? " · " + "★".repeat(s.rating) : ""}</div>
-            </div>
-            ${s.manual ? '<span class="session-manual-tag">manual</span>' : ''}
-            <div class="session-dur">${fmtShort(s.durationSec)}</div>
-            <div class="session-del" data-id="${s.id}">✕</div>
-          </div>
-          ${trackerTagsHtml}
-        `;
-        card.querySelector('.session-del').onclick = (e) => {
-          e.stopPropagation();
-          if(confirm("Delete this session?")){
-            sessions = sessions.filter(x => x.id !== s.id);
-            saveSessions();
-            renderHome();
-          }
-        };
-        card.onclick = () => openDetail(s.id);
-        feed.appendChild(card);
-      });
-    }
-  }
-
   // ---------- setup screen: tags ----------
   function renderChips(){
     const row = $('chip-row');
@@ -1976,17 +1946,6 @@
     currentIntention = e.target.value.trim();
     $('btn-start-session').disabled = currentIntention.length === 0;
   });
-
-  // ---------- clear data ----------
-  $('btn-clear').onclick = () => {
-    if(sessions.length === 0) return;
-    if(confirm("Delete all logged study sessions? This can't be undone.")){
-      sessions = [];
-      saveSessions();
-      renderHome();
-    }
-  };
-
   // ---------- confetti ----------
   function burstConfetti(originEl){
     const rect = originEl.getBoundingClientRect();
@@ -2063,23 +2022,43 @@
   }
 
   function renderTrackerToggles(){
-    const row = $('tracker-toggle-row');
-    row.innerHTML = "";
-    if(activeTrackers.length === 0){
-      $('tap-count-hint').textContent = "";
-      $('tap-hint').style.display = "none";
-      return;
-    }
-    $('tap-hint').style.display = "block";
-    activeTrackers.forEach(t => {
-      const el = document.createElement('div');
-      el.className = "tracker-toggle" + (t.id === currentActiveTrackerId ? " active" : "");
-      el.innerHTML = `<span class="tg-name">${escapeHtml(t.name)}</span><span class="tg-count">${t.count}</span>`;
-      el.onclick = (e) => { e.stopPropagation(); switchActiveTracker(t.id); };
-      row.appendChild(el);
-    });
-    updateTapHint();
+  const row = $('tracker-toggle-row');
+  row.innerHTML = "";
+  if(activeTrackers.length === 0){
+    $('tap-count-hint').textContent = "";
+    $('tap-hint').style.display = "none";
+    return;
   }
+  $('tap-hint').style.display = "block";
+  $('tap-hint').textContent = "Tap anywhere to count · use − to undo";
+  activeTrackers.forEach(t => {
+    const wrap = document.createElement('div');
+    wrap.className = "tracker-toggle-wrap";
+
+    const dec = document.createElement('button');
+    dec.className = "tg-dec";
+    dec.textContent = "−";
+    dec.onclick = (e) => {
+      e.stopPropagation();
+      if(t.count > 0){
+        t.count--;
+        t.events.pop();
+        const idx = draftEntries.map(d => d.trackerId).lastIndexOf(t.id);
+        if(idx > -1) draftEntries.splice(idx, 1);
+        renderTrackerToggles();
+      }
+    };
+
+    const el = document.createElement('div');
+    el.className = "tracker-toggle" + (t.id === currentActiveTrackerId ? " active" : "");
+    el.innerHTML = `<span class="tg-name">${escapeHtml(t.name)}</span><span class="tg-count">${t.count}</span>`;
+    el.onclick = (e) => { e.stopPropagation(); switchActiveTracker(t.id); };
+
+    wrap.appendChild(dec);
+    wrap.appendChild(el);
+    row.appendChild(wrap);
+  });
+}
 
   function updateTapHint(){
     const t = findActiveTracker(currentActiveTrackerId);
@@ -2155,7 +2134,6 @@
     stopCamera();
     sessionActive = false;
     if(currentActiveTrackerId) closeSegment(currentActiveTrackerId);
-    closeQuickCapture();
     pendingDuration = Math.floor(currentElapsedSec());
     if(pendingDuration < 5){
       showScreen('screen-home');
@@ -2165,19 +2143,7 @@
   };
 
   // ---------- tap-anywhere quick capture ----------
-  function openQuickCapture(){
-    if(activeTrackers.length === 0) return; // nothing to log against
-    if(paused) return;
-    const t = findActiveTracker(currentActiveTrackerId);
-    if(!t) return;
-    $('qc-target').textContent = "Logging to " + t.name;
-    $('qc-input').value = "";
-    $('quick-capture-backdrop').classList.add('visible');
-    setTimeout(()=> $('qc-input').focus(), 200);
-  }
-  function closeQuickCapture(){
-    $('quick-capture-backdrop').classList.remove('visible');
-  }
+
   function addDraftEntry(){
     const t = findActiveTracker(currentActiveTrackerId);
     if(!t) return;
@@ -2197,25 +2163,26 @@
   }
 
   // tap anywhere on the camera area, but ignore taps on real controls
-  $('cam-fullscreen').addEventListener('click', (e) => {
-    if(!sessionActive) return;
-    if($('quick-capture-backdrop').classList.contains('visible')) return;
-    const ignoreSelectors = '.pusher, .tracker-toggle, .qc-cancel, .qc-add, .qc-input, .quick-capture-sheet';
-    if(e.target.closest(ignoreSelectors)) return;
-    openQuickCapture();
+ 
+$('cam-fullscreen').addEventListener('click', (e) => {
+  if(!sessionActive || paused) return;
+  const ignoreSelectors = '.pusher, .tracker-toggle, .tg-dec, .tg-inc, .modal-sheet';
+  if(e.target.closest(ignoreSelectors)) return;
+  const t = findActiveTracker(currentActiveTrackerId);
+  if(!t) return;
+  const elapsedSec = Math.floor(currentElapsedSec());
+  t.count++;
+  t.events.push(elapsedSec);
+  draftEntries.push({
+    id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
+    trackerId: t.id,
+    text: t.name + " #" + t.count,
+    elapsedSec
   });
-  $('qc-cancel').onclick = (e) => { e.stopPropagation(); closeQuickCapture(); };
-  $('qc-add').onclick = (e) => { e.stopPropagation(); addDraftEntry(); };
-  $('qc-input').addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      addDraftEntry();
-    }
-  });
-  $('quick-capture-backdrop').addEventListener('click', (e) => {
-    if(e.target === $('quick-capture-backdrop')) closeQuickCapture();
-  });
-
+  renderTrackerToggles();
+  burstConfetti($('tracker-toggle-row').querySelector('.tracker-toggle.active') || $('timer-display'));
+});
+ 
   // ---------- charts ----------
   function sparklineSvg(events, durationSec){
     const w = 260, h = 46;
@@ -2661,7 +2628,81 @@
       feed.appendChild(card);
     });
   }
+function renderLogs(){
+  // populate tag filter
+  const tagSel = $('log-filter-tag');
+  const prevTag = tagSel.value;
+  tagSel.innerHTML = '<option value="">All tags</option>';
+  [...new Set(sessions.map(s => s.subject).filter(Boolean))].sort().forEach(tag => {
+    const o = document.createElement('option');
+    o.value = tag; o.textContent = tag;
+    tagSel.appendChild(o);
+  });
+  if(prevTag) tagSel.value = prevTag;
 
+  const sortVal = $('log-sort').value;
+  const filterTag = tagSel.value;
+
+  let list = [...sessions];
+  if(filterTag) list = list.filter(s => s.subject === filterTag);
+  if(sortVal === 'date-desc') list.sort((a,b) => new Date(b.startedAt) - new Date(a.startedAt));
+  else if(sortVal === 'date-asc') list.sort((a,b) => new Date(a.startedAt) - new Date(b.startedAt));
+  else if(sortVal === 'dur-desc') list.sort((a,b) => b.durationSec - a.durationSec);
+  else if(sortVal === 'dur-asc') list.sort((a,b) => a.durationSec - b.durationSec);
+  else if(sortVal === 'rating-desc') list.sort((a,b) => (b.rating||0) - (a.rating||0));
+
+  const feed = $('logs-feed');
+  feed.innerHTML = "";
+  if(list.length === 0){
+    feed.innerHTML = '<div class="empty-state">No sessions match.</div>';
+    return;
+  }
+  list.forEach(s => {
+    const card = document.createElement('div');
+    card.className = "session-card";
+    const d = new Date(s.startedAt);
+    const timeStr = d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+    const dateStr = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const tagTxt = (s.subject||"").slice(0,3).toUpperCase();
+    let trackerTagsHtml = "";
+    if(s.trackers && s.trackers.length){
+      trackerTagsHtml = '<div class="tracker-tags">' + s.trackers.map(t => {
+        const activeSec = t.activeSec != null ? t.activeSec : s.durationSec;
+        const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) + " min/" + t.unit : "";
+        return `<span class="tracker-tag">${escapeHtml(t.name)}: ${t.count}${rate ? " · " + rate : ""}</span>`;
+      }).join("") + '</div>';
+    }
+    card.innerHTML = `
+      <div class="session-card-top">
+        <div class="session-badge">${tagTxt}</div>
+        <div class="session-info">
+          <div class="intention">${escapeHtml(s.intention || "Study session")}</div>
+          <div class="meta">${dateStr} · ${timeStr}${s.rating ? " · " + "★".repeat(s.rating) : ""}</div>
+        </div>
+        ${s.manual ? '<span class="session-manual-tag">manual</span>' : ''}
+        <div class="session-dur">${fmtShort(s.durationSec)}</div>
+        <div class="session-del" data-id="${s.id}">✕</div>
+      </div>
+      ${trackerTagsHtml}
+    `;
+    card.querySelector('.session-del').onclick = (e) => {
+      e.stopPropagation();
+      if(confirm("Delete this session?")){
+        sessions = sessions.filter(x => x.id !== s.id);
+        saveSessions();
+        renderLogs();
+        renderHome();
+      }
+    };
+    card.onclick = () => openDetail(s.id);
+    feed.appendChild(card);
+  });
+}
+
+// Wire up filter/sort controls (add this once, near the other event bindings):
+document.addEventListener('change', (e) => {
+  if(e.target.id === 'log-filter-tag' || e.target.id === 'log-sort') renderLogs();
+});
   function renderInsights(){
     renderHeatmap();
     renderGoals();

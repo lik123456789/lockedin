@@ -1,4 +1,5 @@
 // js/analytics.js - depends: utils.js, storage.js, session.js
+let editingSessionId = null;
 
 function renderDraftReview(){
   const slot = $('draft-review-slot');
@@ -141,9 +142,9 @@ function renderRatingRow(){
 
 function setupSummaryUI(){
   $('btn-save').onclick = () => {
-    sessions.push({
-      id: Date.now(),
-      startedAt: new Date(Date.now() - pendingDuration*1000).toISOString(),
+    const sessionObj = {
+      id: editingSessionId || Date.now(),
+      startedAt: editingSessionId ? sessions.find(s=>s.id===editingSessionId).startedAt : new Date(Date.now() - pendingDuration*1000).toISOString(),
       subject: currentSubject,
       intention: currentIntention,
       durationSec: pendingDuration,
@@ -155,12 +156,51 @@ function setupSummaryUI(){
         segments: t.segments,
         notes: draftEntries.filter(d => d.trackerId === t.id).map(d => ({text: d.text, elapsedSec: d.elapsedSec}))
       }))
-    });
+    };
+    if (editingSessionId) {
+      const idx = sessions.findIndex(s => s.id === editingSessionId);
+      if (idx > -1) sessions[idx] = sessionObj;
+      editingSessionId = null;
+    } else {
+      sessions.push(sessionObj);
+    }
     saveSessions();
     renderHome();
     showScreen('screen-home');
   };
 }
+
+$('btn-detail-edit').onclick = () => {
+  const s = sessions.find(x => x.id === detailSessionId);
+  if(!s) return;
+  editingSessionId = s.id;
+  currentSubject = s.subject || "Untagged";
+  currentIntention = s.intention || "";
+  pendingDuration = s.durationSec || 0;
+  selectedRating = s.rating || 0;
+  pickupCount = s.pickups || 0;
+  
+  activeTrackers = (s.trackers || []).map(t => ({
+    id: t.id, name: t.name, unit: t.unit, count: t.count, events: [...(t.events||[])],
+    segments: t.segments || [], activeSecOverride: t.activeSec
+  }));
+  
+  draftEntries = [];
+  (s.trackers || []).forEach(t => {
+    if(t.notes) {
+      t.notes.forEach(n => {
+        draftEntries.push({
+          id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
+          trackerId: t.id,
+          text: n.text,
+          elapsedSec: n.elapsedSec
+        });
+      });
+    }
+  });
+  
+  showSummary();
+};
 
 function openDetail(id){
   const s = sessions.find(x => x.id === id);

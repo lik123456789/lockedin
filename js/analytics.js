@@ -64,7 +64,7 @@ function renderTrackerSummarySlot(){
     pu.textContent = "📵 " + pickupCount + " phone pickup" + (pickupCount===1?"":"s") + " mid-session";
     trackerSlot.appendChild(pu);
   }
-  activeTrackers.filter(t => t.count > 0).forEach(t => {
+  activeTrackers.forEach(t => {
     const activeSec = trackerActiveSeconds(t);
     const rate = t.count>0 ? (activeSec/60/t.count).toFixed(1) : "—";
     const card = document.createElement('div');
@@ -74,9 +74,21 @@ function renderTrackerSummarySlot(){
         <span class="name">${escapeHtml(t.name)}</span>
         <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
       </div>
-      <div class="tracker-summary-count">${t.count}</div>
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:6px;">
+        <button class="tg-dec ts-dec" style="width:32px; height:32px; font-size:20px;">−</button>
+        <div class="tracker-summary-count" style="min-width:32px; text-align:center;">${t.count}</div>
+        <button class="tg-inc ts-inc" style="width:32px; height:32px; font-size:20px;">+</button>
+      </div>
       ${sparklineSvg(t.events, pendingDuration)}
     `;
+    card.querySelector('.ts-dec').onclick = () => {
+      if(t.count > 0){ t.count--; }
+      renderTrackerSummarySlot();
+    };
+    card.querySelector('.ts-inc').onclick = () => {
+      t.count++;
+      renderTrackerSummarySlot();
+    };
     trackerSlot.appendChild(card);
   });
 }
@@ -412,7 +424,7 @@ $('btn-add-goal').onclick = () => {
   const tag = prompt('Set a weekly goal for which tag?\n(' + subjects.join(', ') + ')', subjects[0]);
   if(!tag) return;
   const trimmed = tag.trim();
-  if(!subjects.includes(trimmed)){ alert("That's not one of your tags."); return; }
+  if(!subjects.includes(trimmed)){ alert('That's not one of your tags.'); return; }
   const hrsStr = prompt('Weekly goal in hours for "' + trimmed + '":', '5');
   const hrs = parseFloat(hrsStr);
   if(!hrs || hrs <= 0) return;

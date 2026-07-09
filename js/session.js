@@ -91,7 +91,7 @@ function renderTrackerToggles(){
 
     const el = document.createElement('div');
     el.className = "tracker-toggle" + (t.id === currentActiveTrackerId ? " active" : "");
-    el.innerHTML = `<span class="tg-name">${escapeHtml(t.name)}</span><span class="tg-count">${t.count}</span>`;
+    el.innerHTML = `<span class="tg-count">${t.count}</span>`;
     el.onclick = (e) => { e.stopPropagation(); switchActiveTracker(t.id); };
 
     wrap.appendChild(dec);
@@ -105,7 +105,7 @@ function updateTapHint(){
   const t = findActiveTracker(currentActiveTrackerId);
   const hint = $('tap-count-hint');
   if(!t){ hint.textContent = ""; return; }
-  hint.innerHTML = "Tapping the screen logs a rough note to <b>" + escapeHtml(t.name) + "</b> — you'll review and edit everything at the end.";
+  hint.innerHTML = "Tapping the screen logs a count — you'll review and edit everything at the end.";
 }
 
 async function startCamera(){

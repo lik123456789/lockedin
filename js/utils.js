@@ -76,7 +76,7 @@ function burstConfetti(originEl){
 function sparklineSvg(events, durationSec){
   const w = 260, h = 46;
   if(!events || events.length === 0){
-    return `<svg width="${w}" height="${h}"></svg>`;
+    return `<svg width="100%" height="${h}" style="display:block;"></svg>`;
   }
   const maxT = Math.max(durationSec, 1);
   const maxC = events.length;
@@ -86,7 +86,7 @@ function sparklineSvg(events, durationSec){
     return x.toFixed(1) + "," + y.toFixed(1);
   });
   const path = "M3," + (h-3) + " L" + pts.join(" L");
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-    <path d="${path}" fill="none" stroke="#7FA687" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block; margin: 0 auto;">
+    <path d="${path}" fill="none" stroke="#7FA687" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
   </svg>`;
 }

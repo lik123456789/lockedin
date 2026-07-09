@@ -424,7 +424,7 @@ $('btn-add-goal').onclick = () => {
   const tag = prompt('Set a weekly goal for which tag?\n(' + subjects.join(', ') + ')', subjects[0]);
   if(!tag) return;
   const trimmed = tag.trim();
-  if(!subjects.includes(trimmed)){ alert('That's not one of your tags.'); return; }
+  if(!subjects.includes(trimmed)){ alert("That's not one of your tags."); return; }
   const hrsStr = prompt('Weekly goal in hours for "' + trimmed + '":', '5');
   const hrs = parseFloat(hrsStr);
   if(!hrs || hrs <= 0) return;

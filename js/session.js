@@ -46,6 +46,7 @@ function closeSegment(trackerId){
 }
 
 function trackerActiveSeconds(t){
+  if(t.activeSecOverride != null) return t.activeSecOverride;
   let sum = t.segments.reduce((a,seg)=>a+seg.duration,0);
   if(t.segmentStart != null){
     sum += Math.max(0, currentElapsedSec() - t.segmentStart);
@@ -198,7 +199,7 @@ function setupSessionUI(){
     draftEntries.push({
       id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
       trackerId: t.id,
-      text: t.name + " #" + t.count,
+      text: "#" + t.count,
       elapsedSec
     });
     renderTrackerToggles();

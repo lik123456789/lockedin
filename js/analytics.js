@@ -72,7 +72,7 @@ function renderTrackerSummarySlot(){
     card.innerHTML = `
       <div class="tracker-summary-head">
         <span class="name">${escapeHtml(t.name)}</span>
-        <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
+        <span class="rate ts-edit-time" style="cursor:pointer; text-decoration:underline;" title="Edit time spent">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
       </div>
       <div style="display:flex; align-items:center; gap:14px; margin-bottom:6px;">
         <button class="tg-dec ts-dec" style="width:32px; height:32px; font-size:20px;">−</button>
@@ -81,12 +81,35 @@ function renderTrackerSummarySlot(){
       </div>
       ${sparklineSvg(t.events, pendingDuration)}
     `;
+    card.querySelector('.ts-edit-time').onclick = () => {
+      const minStr = prompt('Time spent on ' + t.name + ' in minutes:', (activeSec/60).toFixed(1));
+      if(minStr !== null){
+        const min = parseFloat(minStr);
+        if(!isNaN(min) && min >= 0){
+          t.activeSecOverride = Math.round(min * 60);
+          renderDraftReview();
+          renderTrackerSummarySlot();
+        }
+      }
+    };
     card.querySelector('.ts-dec').onclick = () => {
-      if(t.count > 0){ t.count--; }
-      renderTrackerSummarySlot();
+      if(t.count > 0){ 
+        t.count--; 
+        const idx = draftEntries.map(d => d.trackerId).lastIndexOf(t.id);
+        if(idx > -1) draftEntries.splice(idx, 1);
+        renderDraftReview();
+        renderTrackerSummarySlot();
+      }
     };
     card.querySelector('.ts-inc').onclick = () => {
       t.count++;
+      draftEntries.push({
+        id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
+        trackerId: t.id,
+        text: "#" + t.count,
+        elapsedSec: pendingDuration
+      });
+      renderDraftReview();
       renderTrackerSummarySlot();
     };
     trackerSlot.appendChild(card);

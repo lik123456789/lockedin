@@ -462,10 +462,99 @@ function renderLogs(){
   });
 }
 
+function renderBestTimes(){
+  const feed = $('best-time-feed');
+  feed.innerHTML = "";
+  if(sessions.length < 10) {
+    const empty = document.createElement('div');
+    empty.className = "empty-state";
+    const left = 10 - sessions.length;
+    empty.innerHTML = `Not enough data yet. Log ${left} more session${left === 1 ? '' : 's'} to see your best times.`;
+    feed.appendChild(empty);
+    return;
+  }
+  
+  const buckets = {
+    "Morning (5am-12pm)": { duration: 0, count: 0, ratingSum: 0, ratingCount: 0 },
+    "Afternoon (12pm-5pm)": { duration: 0, count: 0, ratingSum: 0, ratingCount: 0 },
+    "Evening (5pm-9pm)": { duration: 0, count: 0, ratingSum: 0, ratingCount: 0 },
+    "Night (9pm-5am)": { duration: 0, count: 0, ratingSum: 0, ratingCount: 0 }
+  };
+
+  let absoluteMaxDur = -1;
+  let absoluteLongestBucket = null;
+  let absoluteMaxRatingScore = -1;
+  let absoluteHardestBucket = null;
+  
+  sessions.forEach(s => {
+    const hour = new Date(s.startedAt).getHours();
+    let b = "";
+    if(hour >= 5 && hour < 12) b = "Morning (5am-12pm)";
+    else if(hour >= 12 && hour < 17) b = "Afternoon (12pm-5pm)";
+    else if(hour >= 17 && hour < 21) b = "Evening (5pm-9pm)";
+    else b = "Night (9pm-5am)";
+    
+    buckets[b].duration += s.durationSec;
+    buckets[b].count++;
+    if(s.rating) {
+      buckets[b].ratingSum += s.rating;
+      buckets[b].ratingCount++;
+    }
+
+    if(s.durationSec > absoluteMaxDur) {
+      absoluteMaxDur = s.durationSec;
+      absoluteLongestBucket = b;
+    }
+
+    const rat = s.rating || 0;
+    const score = rat * 1000000 + s.durationSec;
+    if(score > absoluteMaxRatingScore) {
+      absoluteMaxRatingScore = score;
+      absoluteHardestBucket = b;
+    }
+  });
+  
+  let bestLongest = null;
+  let maxAvgDuration = -1;
+  let bestHardest = null;
+  let maxAvgRating = -1;
+  
+  Object.keys(buckets).forEach(b => {
+    if(buckets[b].count > 0) {
+      const avgDur = buckets[b].duration / buckets[b].count;
+      if(avgDur > maxAvgDuration) {
+        maxAvgDuration = avgDur;
+        bestLongest = b;
+      }
+    }
+    if(buckets[b].ratingCount > 0) {
+      const avgRat = buckets[b].ratingSum / buckets[b].ratingCount;
+      if(avgRat > maxAvgRating) {
+        maxAvgRating = avgRat;
+        bestHardest = b;
+      }
+    }
+  });
+  
+  const card = document.createElement('div');
+  card.className = "pr-card";
+  card.innerHTML = `
+    <div class="pr-row" style="font-size:11px; color:var(--text-dim); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px;">Long periods</div>
+    <div class="pr-row"><span class="k">Best time (on average)</span><span class="v" style="color:var(--primary); font-weight:500;">${bestLongest || "—"}</span></div>
+    <div class="pr-row"><span class="k">Single longest session</span><span class="v" style="color:var(--primary); font-weight:500;">${absoluteLongestBucket || "—"}</span></div>
+    
+    <div class="pr-row" style="font-size:11px; color:var(--text-dim); margin-top:10px; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px;">Hard things</div>
+    <div class="pr-row"><span class="k">Best time (on average)</span><span class="v" style="color:var(--primary); font-weight:500;">${bestHardest || "—"}</span></div>
+    <div class="pr-row"><span class="k">Single hardest session</span><span class="v" style="color:var(--primary); font-weight:500;">${absoluteHardestBucket || "—"}</span></div>
+  `;
+  feed.appendChild(card);
+}
+
 function renderInsights(){
   renderHeatmap();
   renderGoals();
   renderPRs();
+  renderBestTimes();
 }
 
 document.addEventListener('change', (e) => {

@@ -85,7 +85,14 @@ function sparklineSvg(events, durationSec){
     const y = h - ((i+1) / maxC) * (h-6) - 3;
     return x.toFixed(1) + "," + y.toFixed(1);
   });
-  const path = "M3," + (h-3) + " L" + pts.join(" L");
+  let path = "M3," + (h-3);
+  if(pts.length > 0) {
+    path += " L" + pts.join(" L");
+    const lastY = h - (events.length / maxC) * (h-6) - 3;
+    path += ` L${w-3},${lastY.toFixed(1)}`;
+  } else {
+    path += ` L${w-3},${h-3}`;
+  }
   return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block; margin: 0 auto;">
     <path d="${path}" fill="none" stroke="#7FA687" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
   </svg>`;

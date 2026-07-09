@@ -3,7 +3,7 @@
 function renderDraftReview(){
   const slot = $('draft-review-slot');
   slot.innerHTML = "";
-  if(draftEntries.length === 0) return;
+  if(activeTrackers.length === 0) return;
 
   const heading = document.createElement('div');
   heading.className = "field-label";
@@ -15,7 +15,6 @@ function renderDraftReview(){
 
   activeTrackers.forEach(t => {
     const entries = draftEntries.filter(d => d.trackerId === t.id);
-    if(entries.length === 0) return;
     const activeSec = trackerActiveSeconds(t);
     const rate = entries.length ? (activeSec/60/entries.length).toFixed(1) : "—";
     const card = document.createElement('div');
@@ -23,11 +22,35 @@ function renderDraftReview(){
     card.innerHTML = `
       <div class="draft-review-head">
         <span class="name">${escapeHtml(t.name)}</span>
-        <span class="rate">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
+        <span class="rate dr-edit-time" style="cursor:pointer; text-decoration:underline;" title="Edit time spent">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
       </div>
       <div class="draft-entry-list" id="draft-list-${t.id}"></div>
+      <button class="dr-add-btn" style="width:100%; padding:8px; margin-top:8px; border-radius:6px; border:1px dashed #333; background:transparent; color:#888; cursor:pointer;">+ Add Event</button>
     `;
     slot.appendChild(card);
+    card.querySelector('.dr-edit-time').onclick = () => {
+      const minStr = prompt('Time spent on ' + t.name + ' in minutes:', (activeSec/60).toFixed(1));
+      if(minStr !== null){
+        const min = parseFloat(minStr);
+        if(!isNaN(min) && min >= 0){
+          t.activeSecOverride = Math.round(min * 60);
+          renderDraftReview();
+          renderTrackerSummarySlot();
+        }
+      }
+    };
+    card.querySelector('.dr-add-btn').onclick = () => {
+      t.count++;
+      t.events.push(pendingDuration);
+      draftEntries.push({
+        id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
+        trackerId: t.id,
+        text: "#" + t.count,
+        elapsedSec: pendingDuration
+      });
+      renderDraftReview();
+      renderTrackerSummarySlot();
+    };
     const list = card.querySelector('.draft-entry-list');
     entries.forEach(entry => {
       const row = document.createElement('div');
@@ -45,7 +68,10 @@ function renderDraftReview(){
         const idx = draftEntries.findIndex(x => x.id === entry.id);
         if(idx > -1) draftEntries.splice(idx,1);
         const tr = findActiveTracker(t.id);
-        if(tr) tr.count = Math.max(0, tr.count - 1);
+        if(tr) {
+          tr.count = Math.max(0, tr.count - 1);
+          tr.events.pop();
+        }
         renderDraftReview();
         renderTrackerSummarySlot();
       };
@@ -72,46 +98,10 @@ function renderTrackerSummarySlot(){
     card.innerHTML = `
       <div class="tracker-summary-head">
         <span class="name">${escapeHtml(t.name)}</span>
-        <span class="rate ts-edit-time" style="cursor:pointer; text-decoration:underline;" title="Edit time spent">${fmtMS(activeSec)} active · ${rate} min/${escapeHtml(t.unit)}</span>
-      </div>
-      <div style="display:flex; align-items:center; gap:14px; margin-bottom:6px;">
-        <button class="tg-dec ts-dec" style="width:32px; height:32px; font-size:20px;">−</button>
-        <div class="tracker-summary-count" style="min-width:32px; text-align:center;">${t.count}</div>
-        <button class="tg-inc ts-inc" style="width:32px; height:32px; font-size:20px;">+</button>
+        <span class="rate">${t.count} events · ${rate} min/${escapeHtml(t.unit)}</span>
       </div>
       ${sparklineSvg(t.events, pendingDuration)}
     `;
-    card.querySelector('.ts-edit-time').onclick = () => {
-      const minStr = prompt('Time spent on ' + t.name + ' in minutes:', (activeSec/60).toFixed(1));
-      if(minStr !== null){
-        const min = parseFloat(minStr);
-        if(!isNaN(min) && min >= 0){
-          t.activeSecOverride = Math.round(min * 60);
-          renderDraftReview();
-          renderTrackerSummarySlot();
-        }
-      }
-    };
-    card.querySelector('.ts-dec').onclick = () => {
-      if(t.count > 0){ 
-        t.count--; 
-        const idx = draftEntries.map(d => d.trackerId).lastIndexOf(t.id);
-        if(idx > -1) draftEntries.splice(idx, 1);
-        renderDraftReview();
-        renderTrackerSummarySlot();
-      }
-    };
-    card.querySelector('.ts-inc').onclick = () => {
-      t.count++;
-      draftEntries.push({
-        id: Date.now() + "_" + Math.random().toString(36).slice(2,7),
-        trackerId: t.id,
-        text: "#" + t.count,
-        elapsedSec: pendingDuration
-      });
-      renderDraftReview();
-      renderTrackerSummarySlot();
-    };
     trackerSlot.appendChild(card);
   });
 }

@@ -281,3 +281,253 @@ textarea#intention:focus { outline:none; border-color:var(--brass); }
 .pr-row .v { font-family: ui-monospace, monospace; font-weight:700; color:var(--text); }
 
 ::-webkit-scrollbar { display:none; }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+
+/* Tablet & Desktop: Relax container max-width */
+@media (min-width: 768px) {
+  #app {
+    max-width: 600px;
+  }
+}
+
+/* Landscape Phone Override: Viewports with narrow heights (<= 500px) */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Home screen adjustments */
+  #screen-home {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dial-wrap {
+    padding: 8px 20px 0;
+  }
+
+  .dial {
+    width: 160px;
+    height: 160px;
+  }
+
+  .start-wrap {
+    padding: 6px 20px 12px;
+  }
+
+  .start-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+  }
+
+  .dial-wrap,
+  .start-wrap {
+    display: inline-flex;
+  }
+
+  #screen-home > .dial-wrap,
+  #screen-home > .start-wrap {
+    flex: 0 0 auto;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 20px 12px;
+    gap: 6px;
+  }
+
+  .stat-card {
+    padding: 8px 4px;
+  }
+
+  .stat-card .v {
+    font-size: 14px;
+  }
+
+  /* Login screen two-column layout */
+  .login-screen {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 32px;
+    padding: 20px 40px;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .login-mark {
+    margin-bottom: 10px;
+  }
+
+  .login-screen h1 {
+    font-size: 20px;
+  }
+
+  .login-screen p {
+    font-size: 12px;
+    margin-bottom: 16px;
+    max-width: 200px;
+  }
+
+  .google-btn,
+  .email-auth-form,
+  .auth-divider {
+    max-width: 260px;
+  }
+
+  /* Setup screen spacing reduction */
+  .setup-inner {
+    padding: 8px 22px 12px;
+  }
+
+  .setup-inner h2 {
+    font-size: 18px;
+    margin: 4px 0 14px;
+  }
+
+  textarea#intention {
+    min-height: 52px;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .chip-row {
+    margin: 8px 0 14px;
+  }
+
+  .primary-btn {
+    padding: 13px;
+  }
+
+  /* Session camera and controller adjustments */
+  .scrim-top {
+    height: 120px;
+  }
+
+  .scrim-bottom {
+    height: 80%;
+  }
+
+  .timer-display {
+    font-size: 38px;
+    margin: 0 0 2px;
+  }
+
+  .timer-sub {
+    margin-bottom: 10px;
+  }
+
+  .session-bottom {
+    padding: 0 24px max(16px, calc(var(--bottom-safe) + 10px));
+  }
+
+  .pusher {
+    width: 58px;
+    height: 58px;
+    font-size: 11px;
+  }
+
+  .pusher-row {
+    gap: 16px;
+  }
+
+  .no-record-tag {
+    margin-bottom: 8px;
+  }
+
+  .tracker-toggle-row {
+    margin-bottom: 6px;
+  }
+
+  .tracker-toggle {
+    padding: 6px 10px;
+    min-width: 62px;
+  }
+
+  /* Summary screen spacing reduction */
+  .summary-screen {
+    padding: 12px 24px 12px;
+  }
+
+  .summary-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .summary-time {
+    font-size: 32px;
+    margin: 10px 0 2px;
+  }
+
+  .summary-sub {
+    margin-bottom: 10px;
+  }
+
+  .rating-row {
+    margin: 4px 0 16px;
+    gap: 8px;
+  }
+
+  .rating-dot {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+
+  /* Navigation tab bar & FAB */
+  .tab-bar {
+    padding: 3px 20px;
+    padding-bottom: max(3px, calc(var(--bottom-safe) + 3px));
+  }
+
+  .tab-btn {
+    font-size: 8px;
+    padding: 1px 0;
+  }
+
+  .tab-btn .ticon {
+    font-size: 11px;
+  }
+
+  .fab {
+    bottom: calc(var(--bottom-safe) + 58px);
+  }
+
+  /* Insights & Logs adjustments */
+  .home-header {
+    padding: 6px 20px;
+  }
+
+  .home-header h1 {
+    font-size: 22px;
+  }
+
+  .section-title {
+    padding: 2px 20px 6px;
+  }
+
+  .heatmap-wrap {
+    padding: 0 20px 4px;
+  }
+
+  .heatmap-legend {
+    padding: 0 20px 12px;
+  }
+
+  /* Modal adjustments */
+  .modal-sheet {
+    max-height: 96vh;
+    padding: 12px 22px max(12px, calc(var(--bottom-safe) + 12px));
+  }
+
+  .modal-title {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .modal-handle {
+    margin-bottom: 10px;
+  }
+}

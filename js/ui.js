@@ -69,12 +69,21 @@ function renderDial(stats){
   const ticksEl = $('dial-ticks');
   ticksEl.innerHTML = "";
   const labels = stats.week.map(d => "SMTWTFS"[d.date.getDay()]);
-  const R = 100;
+
+  const dialEl = ticksEl.closest('.dial') || ticksEl.parentElement;
+  const dialRect = dialEl.getBoundingClientRect();
+  const dialW = dialRect.width || 236;
+  const dialH = dialRect.height || 236;
+  const cx = dialW / 2;
+  const cy = dialH / 2;
+  const R = cx * 0.847;
+  const TICK_HALF = 9;
+
   stats.week.forEach((d,i)=>{
     const angleDeg = i*segAngle + segAngle/2 - 90;
     const rad = angleDeg * Math.PI/180;
-    const x = 118 + R*Math.cos(rad) - 9;
-    const y = 118 + R*Math.sin(rad) - 9;
+    const x = cx + R*Math.cos(rad) - TICK_HALF;
+    const y = cy + R*Math.sin(rad) - TICK_HALF;
     const tick = document.createElement('div');
     tick.className = "dial-tick" + (d.studied ? " studied" : "");
     tick.style.left = x + "px";

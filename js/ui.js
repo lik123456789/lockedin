@@ -57,9 +57,10 @@ function renderDial(stats){
   const gap = 4;
   stats.week.forEach((d, i) => {
     let color = "rgba(237,234,226,0.08)";
-    if(d.minutes > 0 && d.minutes < 20) color = "rgba(201,160,92,0.35)";
-    else if(d.minutes >= 20 && d.minutes < 60) color = "#C9A05C";
-    else if(d.minutes >= 60) color = "#E4C07E";
+    const isToday = (i === 6);
+    if (d.minutes > 0) {
+      color = isToday ? "#C9A05C" : "#E4C07E";
+    }
     const start = i*segAngle + gap/2;
     const end = (i+1)*segAngle - gap/2;
     stops.push(color + " " + start + "deg " + end + "deg");
@@ -85,7 +86,8 @@ function renderDial(stats){
     const x = cx + R*Math.cos(rad) - TICK_HALF;
     const y = cy + R*Math.sin(rad) - TICK_HALF;
     const tick = document.createElement('div');
-    tick.className = "dial-tick" + (d.studied ? " studied" : "");
+    const isToday = (i === 6);
+    tick.className = "dial-tick" + (d.studied ? " studied" : "") + (isToday ? " today" : "");
     tick.style.left = x + "px";
     tick.style.top = y + "px";
     tick.textContent = labels[i];

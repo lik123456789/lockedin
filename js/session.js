@@ -10,6 +10,7 @@ let activeTrackers = [];
 let currentActiveTrackerId = null;
 let draftEntries = [];
 let sessionActive = false;
+let sessionState = 'inactive';
 let pickupPending = false;
 let pickupCount = 0;
 
@@ -127,6 +128,9 @@ function stopCamera(){
     mediaStream = null;
   }
   $('cam-video').srcObject = null;
+  sessionState = 'inactive';
+  document.body.classList.remove('session-active');
+  handleOrientationLogic();
 }
 
 function resetTimerState(){
@@ -136,6 +140,9 @@ function resetTimerState(){
   pickupCount = 0;
   pickupPending = false;
   sessionActive = true;
+  sessionState = 'active';
+  document.body.classList.add('session-active');
+  handleOrientationLogic();
   $('btn-pause').textContent = "Pause";
   $('timer-sub').textContent = "Studying";
   $('rec-dot').classList.remove('paused');
@@ -208,3 +215,31 @@ function setupSessionUI(){
 }
 
 setupSessionUI();
+
+function handleOrientationLogic() {
+  if (sessionState !== 'active') {
+    document.body.classList.remove('mode-landscape', 'mode-portrait');
+    return;
+  }
+  const isLandscape = window.innerWidth > window.innerHeight;
+  if (isLandscape) {
+    document.body.classList.add('mode-landscape');
+    document.body.classList.remove('mode-portrait');
+  } else {
+    document.body.classList.add('mode-portrait');
+    document.body.classList.remove('mode-landscape');
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (sessionState === 'active') {
+    handleOrientationLogic();
+  }
+});
+
+window.addEventListener('orientationchange', () => {
+  if (sessionState === 'active') {
+    handleOrientationLogic();
+  }
+});
+

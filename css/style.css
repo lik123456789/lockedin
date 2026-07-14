@@ -1,5 +1,5 @@
 :root {
-  --bg:#12181C; --bg-elev:#171F23; --card:#1D262B; --card-2:#232D33; --hairline: rgba(237,234,226,0.08); --hairline-strong: rgba(237,234,226,0.14); --brass:#C9A05C; --brass-bright:#E4C07E; --brass-dim: rgba(201,160,92,0.28); --track-red:#B8483D; --text:#EDEAE2; --text-dim:#93A0A3; --text-faint:#5C666A; --good:#7FA687; --top-clear: calc(env(safe-area-inset-top, 0px) + 30px); --bottom-safe: env(safe-area-inset-bottom, 0px);
+  --bg:#12181C; --bg-elev:#171F23; --card:#1D262B; --card-2:#232D33; --hairline: rgba(237,234,226,0.08); --hairline-strong: rgba(237,234,226,0.14); --brass:#C9A05C; --brass-bright:#E4C07E; --brass-dim: rgba(201,160,92,0.28); --track-red:#B8483D; --text:#EDEAE2; --text-dim:#93A0A3; --text-faint:#5C666A; --good:#7FA687; --top-clear: calc(env(safe-area-inset-top, 0px) + 30px); --bottom-safe: env(safe-area-inset-bottom, 0px); --left-safe: env(safe-area-inset-left, 0px); --right-safe: env(safe-area-inset-right, 0px);
 }
 
 * { box-sizing:border-box; }
@@ -135,13 +135,13 @@ textarea#intention:focus { outline:none; border-color:var(--brass); }
 .scrim-top { position:absolute; top:0; left:0; right:0; height:240px; background:linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0)); z-index:2; pointer-events:none; }
 .scrim-bottom { position:absolute; bottom:0; left:0; right:0; height:66%; background:linear-gradient(to top, rgba(10,13,15,0.92) 20%, rgba(10,13,15,0.55) 55%, rgba(0,0,0,0)); z-index:2; pointer-events:none; }
 
-.rec-dot { position:absolute; top: var(--top-clear); left:18px; width:9px; height:9px; border-radius:50%; background:var(--track-red); box-shadow:0 0 0 4px rgba(184,72,61,0.3); z-index:3; }
+.rec-dot { position:absolute; top: var(--top-clear); left:max(18px, var(--left-safe)); width:9px; height:9px; border-radius:50%; background:var(--track-red); box-shadow:0 0 0 4px rgba(184,72,61,0.3); z-index:3; }
 .rec-dot.paused { background:var(--text-faint); box-shadow:none; }
 
-.session-intention { position:absolute; top: calc(var(--top-clear) + 16px); left:0; right:0; text-align:center; font-size:14.5px; color:var(--text); line-height:1.4; padding:0 54px; z-index:3; }
-.tap-hint { position:absolute; top: calc(var(--top-clear) + 46px); left:0; right:0; text-align:center; font-size:11px; color:var(--text-faint); z-index:3; padding:0 54px; }
+.session-intention { position:absolute; top: calc(var(--top-clear) + 16px); left:0; right:0; text-align:center; font-size:14.5px; color:var(--text); line-height:1.4; padding:0 max(54px, var(--right-safe)) 0 max(54px, var(--left-safe)); z-index:3; }
+.tap-hint { position:absolute; top: calc(var(--top-clear) + 46px); left:0; right:0; text-align:center; font-size:11px; color:var(--text-faint); z-index:3; padding:0 max(54px, var(--right-safe)) 0 max(54px, var(--left-safe)); }
 
-.session-bottom { position:absolute; left:0; right:0; bottom:0; z-index:3; padding:0 24px calc(var(--bottom-safe) + 16px); padding-bottom: max(30px, calc(var(--bottom-safe) + 16px)); display:flex; flex-direction:column; align-items:center; }
+.session-bottom { position:absolute; left:0; right:0; bottom:0; z-index:3; padding:0 max(24px, var(--right-safe)) calc(var(--bottom-safe) + 16px) max(24px, var(--left-safe)); padding-bottom: max(30px, calc(var(--bottom-safe) + 16px)); display:flex; flex-direction:column; align-items:center; }
 .no-record-tag { font-size:10.5px; color:var(--text-faint); letter-spacing:.06em; text-transform:uppercase; font-weight:600; margin-bottom:14px; }
 
 .timer-display { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size:56px; font-weight:700; font-variant-numeric: tabular-nums; letter-spacing:.01em; margin:0 0 4px; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
@@ -544,6 +544,7 @@ body.session-active {
   width: 100vw;
   height: 100vh;
   height: 100dvh;
+  touch-action: none;
 }
 
 /* Expand active session container to full screen in ALL orientations */
@@ -570,3 +571,67 @@ body.session-active .cam-fullscreen {
   height: 100dvh !important;
 }
 
+/* ==========================================================================
+   LANDSCAPE ACTIVE SESSION — LEFT-ALIGNED CONTROLS
+   ========================================================================== */
+
+@media (orientation: landscape) {
+  /* Only apply when session is active (body has .session-active) */
+
+  body.session-active .session-bottom {
+    /* Switch from center-column to left-aligned layout */
+    align-items: flex-start;
+    padding-left: max(24px, calc(var(--left-safe) + 16px));
+    padding-right: max(24px, var(--right-safe));
+    padding-bottom: max(20px, calc(var(--bottom-safe) + 10px));
+  }
+
+  body.session-active .timer-display {
+    font-size: 40px;
+    margin: 0 0 2px;
+  }
+
+  body.session-active .timer-sub {
+    margin-bottom: 10px;
+  }
+
+  body.session-active .no-record-tag {
+    margin-bottom: 8px;
+  }
+
+  body.session-active .tracker-toggle-row {
+    justify-content: flex-start;
+    margin-bottom: 6px;
+  }
+
+  body.session-active .tracker-toggle {
+    padding: 6px 10px;
+    min-width: 62px;
+    transform: scale(0.85);
+    transform-origin: left center;
+  }
+
+  body.session-active .tap-count-hint {
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  body.session-active .pusher-row {
+    gap: 14px;
+    transform: scale(0.85);
+    transform-origin: left center;
+  }
+
+  body.session-active .pusher {
+    width: 60px;
+    height: 60px;
+    font-size: 11px;
+  }
+
+  /* Keep intention text and hint left-aligned to match controls */
+  body.session-active .session-intention,
+  body.session-active .tap-hint {
+    text-align: left;
+    padding-left: max(54px, calc(var(--left-safe) + 16px));
+  }
+}

@@ -150,9 +150,8 @@ function resetTimerState(){
   sessionState = 'active';
   document.body.classList.add('session-active');
   document.documentElement.style.background = '#000';
-  // read chosen orientation from setup radios (default vertical)
-  const sel = document.querySelector('input[name="session-orientation"]:checked');
-  currentSessionOrientation = sel ? sel.value : 'vertical';
+  // detect orientation automatically from device dimensions
+  currentSessionOrientation = (window.innerWidth > window.innerHeight) ? 'landscape' : 'vertical';
   // prepare session id for photo upload linking
   currentSessionId = Date.now().toString();
   currentSessionPhotoUrl = null;
@@ -234,6 +233,35 @@ function setupSessionUI(){
     }
     showSummary();
   };
+
+  // Photo capture controls (session) - centralised here so handlers are always attached
+  const capBtn = $('btn-capture-photo');
+  if(capBtn){
+    capBtn.onclick = async (e) => {
+      e.stopPropagation();
+      const url = await capturePhoto();
+      if(url){
+        const img = $('session-photo-thumb');
+        img.src = url;
+        img.style.display = 'block';
+        const clearBtn = $('btn-clear-photo');
+        if(clearBtn) clearBtn.style.display = 'inline-block';
+      } else {
+        // simple fallback: flash a console warning; optional: show UI toast
+        console.warn('Photo capture failed or camera not ready.');
+      }
+    };
+  }
+  const clearBtn = $('btn-clear-photo');
+  if(clearBtn){
+    clearBtn.onclick = (e) => {
+      e.stopPropagation();
+      currentSessionPhotoUrl = null;
+      const img = $('session-photo-thumb');
+      if(img){ img.src = ''; img.style.display = 'none'; }
+      clearBtn.style.display = 'none';
+    };
+  }
 
   $('cam-fullscreen').addEventListener('click', (e) => {
     if(!sessionActive || paused) return;

@@ -552,6 +552,7 @@ body.session-active {
   height: 100dvh;
   touch-action: none;
   overscroll-behavior: none;
+  background: #000;
 }
 
 body.mode-portrait-guard {
@@ -573,33 +574,7 @@ body.mode-portrait-guard #orientation-guard {
   display:flex !important;
 }
 
-body.mode-portrait-guard #app {
-  max-width: none !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-  padding-bottom: 0 !important;
-  overflow: hidden !important;
-}
 
-body.mode-portrait-guard .tab-bar,
-body.mode-portrait-guard .fab {
-  display: none !important;
-}
-
-body.mode-portrait-guard #screen-session {
-  display:block !important;
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-  overflow: hidden !important;
-}
-
-body.mode-portrait-guard .cam-fullscreen {
-  display:none !important;
-}
 
 /* Expand active session container to full screen in ALL orientations */
 body.session-active #app {
@@ -617,6 +592,7 @@ body.session-active #screen-session {
   width: 100vw !important;
   height: 100vh !important;
   height: 100dvh !important;
+  min-height: -webkit-fill-available;
   z-index: 100;
   overflow: hidden !important;
   overscroll-behavior: none;

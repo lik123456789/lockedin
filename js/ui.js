@@ -21,6 +21,8 @@ function showScreen(id){
     tb.classList.remove('visible');
     fab.classList.remove('visible');
   }
+  
+  if (typeof handleOrientationLogic === 'function') handleOrientationLogic();
 }
 
 function computeStats(){

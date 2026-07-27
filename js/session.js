@@ -133,6 +133,7 @@ function stopCamera(){
   $('cam-video').srcObject = null;
   sessionState = 'inactive';
   document.body.classList.remove('session-active');
+  document.documentElement.style.background = '';
   handleOrientationLogic();
 }
 
@@ -145,6 +146,7 @@ function resetTimerState(){
   sessionActive = true;
   sessionState = 'active';
   document.body.classList.add('session-active');
+  document.documentElement.style.background = '#000';
   handleOrientationLogic();
   $('btn-pause').textContent = "Pause";
   $('timer-sub').textContent = "Studying";
@@ -243,6 +245,12 @@ window.addEventListener('resize', () => {
 window.addEventListener('orientationchange', () => {
   handleOrientationLogic();
 });
+
+if (screen.orientation) {
+  screen.orientation.addEventListener('change', () => {
+    handleOrientationLogic();
+  });
+}
 
 handleOrientationLogic();
 

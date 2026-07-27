@@ -13,6 +13,9 @@ let sessionActive = false;
 let sessionState = 'inactive';
 let pickupPending = false;
 let pickupCount = 0;
+let currentSessionOrientation = 'vertical';
+let currentSessionPhotoUrl = null;
+let currentSessionId = null;
 
 let currentIntention = "";
 let selectedTrackerIds = [];
@@ -147,10 +150,43 @@ function resetTimerState(){
   sessionState = 'active';
   document.body.classList.add('session-active');
   document.documentElement.style.background = '#000';
+  // read chosen orientation from setup radios (default vertical)
+  const sel = document.querySelector('input[name="session-orientation"]:checked');
+  currentSessionOrientation = sel ? sel.value : 'vertical';
+  // prepare session id for photo upload linking
+  currentSessionId = Date.now().toString();
+  currentSessionPhotoUrl = null;
   handleOrientationLogic();
   $('btn-pause').textContent = "Pause";
   $('timer-sub').textContent = "Studying";
   $('rec-dot').classList.remove('paused');
+}
+
+// Capture current video frame to blob and upload (if possible)
+async function capturePhoto(){
+  const video = $('cam-video');
+  if(!video || video.readyState < 2) return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => {
+    canvas.toBlob(async (blob) => {
+      if(!blob){ resolve(null); return; }
+      // try upload to Firebase Storage if available and user signed in
+      if(typeof uploadSessionPhoto === 'function' && typeof fbUser !== 'undefined' && fbUser){
+        const url = await uploadSessionPhoto(currentSessionId, blob);
+        currentSessionPhotoUrl = url || null;
+        resolve(currentSessionPhotoUrl || URL.createObjectURL(blob));
+      } else {
+        // fallback: use object URL (local-only)
+        const url = URL.createObjectURL(blob);
+        currentSessionPhotoUrl = url;
+        resolve(url);
+      }
+    }, 'image/jpeg', 0.86);
+  });
 }
 
 function currentElapsedSec(){
@@ -223,11 +259,11 @@ setupSessionUI();
 
 function handleOrientationLogic() {
   const isLandscape = window.innerWidth > window.innerHeight;
-  // Show the portrait guard ONLY when a session is active and the viewport is NOT landscape
-  const showPortraitGuard = (sessionState === 'active' && !isLandscape);
-  document.body.classList.toggle('mode-portrait-guard', showPortraitGuard);
+  // Don't block orientation — only set orientation classes for styling/advisory
+  // (orientation overlay is intentionally not used per user preference)
+  document.body.classList.remove('mode-portrait-guard');
   const guardEl = $('orientation-guard');
-  if (guardEl) guardEl.classList.toggle('visible', showPortraitGuard);
+  if (guardEl) guardEl.classList.remove('visible');
 
   // If session isn't active, clear orientation classes and exit
   if (sessionState !== 'active') {

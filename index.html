@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -79,6 +80,11 @@
     <div class="top-spacer"></div>
     <div class="setup-inner">
       <span class="eyebrow">Before you start</span>
+      <div style="display:flex; gap:12px; justify-content:center; margin-bottom:8px; align-items:center;">
+        <label style="font-size:12px; color:var(--text-faint);">Orientation</label>
+        <label><input type="radio" name="session-orientation" value="vertical" checked> Vertical</label>
+        <label><input type="radio" name="session-orientation" value="landscape"> Landscape</label>
+      </div>
       <h2>What are you<br/>locking in on?</h2>
       <div class="field-label">Intention</div>
       <textarea id="intention" placeholder="e.g. Finish epsilon-delta practice set"></textarea>
@@ -100,6 +106,11 @@
       <div class="scrim-bottom"></div>
       <div class="rec-dot" id="rec-dot"></div>
       <div class="session-intention" id="session-intention-display"></div>
+      <div class="session-photo-controls" style="position:absolute; right:16px; top: calc(var(--top-clear) + 16px); z-index:4; display:flex; gap:8px; align-items:center;">
+        <button id="btn-capture-photo" title="Take photo" style="padding:8px; border-radius:10px; border:none; background:rgba(255,255,255,0.06); color:var(--text); cursor:pointer;">Capture</button>
+        <img id="session-photo-thumb" alt="photo" style="width:40px; height:40px; object-fit:cover; border-radius:8px; display:none; border:2px solid rgba(255,255,255,0.06);" />
+        <button id="btn-clear-photo" title="Clear photo" style="display:none; padding:6px; border-radius:8px; border:none; background:transparent; color:var(--text-faint); cursor:pointer;">✕</button>
+      </div>
       <div class="tap-hint" id="tap-hint">Tap anywhere to log a note</div>
       <div class="session-bottom">
         <div class="no-record-tag">Live preview only · nothing is recorded</div>
@@ -195,9 +206,9 @@
 
   <button class="fab visible" id="fab-add-manual" title="Log a past session">+</button>
   <div class="tab-bar visible" id="tab-bar">
-    <button class="tab-btn active" id="tab-home"><span class="ticon">🏠</span>Home</button>
-    <button class="tab-btn" id="tab-insights"><span class="ticon">📊</span>Insights</button>
-    <button class="tab-btn" id="tab-logs"><span class="ticon">📋</span>Logs</button>
+    <button class="tab-btn active" id="tab-home"><span class="material-icons ticon">home</span>Home</button>
+    <button class="tab-btn" id="tab-insights"><span class="material-icons ticon">bar_chart</span>Insights</button>
+    <button class="tab-btn" id="tab-logs"><span class="material-icons ticon">assignment</span>Logs</button>
   </div>
 
   <!-- ============ MANUAL SESSION MODAL ============ -->

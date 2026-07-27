@@ -147,9 +147,11 @@ function setupSummaryUI(){
       startedAt: editingSessionId ? sessions.find(s=>s.id===editingSessionId).startedAt : new Date(Date.now() - pendingDuration*1000).toISOString(),
       subject: currentSubject,
       intention: currentIntention,
+      orientation: (typeof currentSessionOrientation !== 'undefined') ? currentSessionOrientation : 'vertical',
       durationSec: pendingDuration,
       rating: selectedRating || null,
       pickups: pickupCount,
+      photoUrl: (typeof currentSessionPhotoUrl !== 'undefined') ? currentSessionPhotoUrl : null,
       trackers: activeTrackers.filter(t => t.count > 0).map(t => ({
         id: t.id, name: t.name, unit: t.unit, count: t.count, events: t.events,
         activeSec: Math.round(trackerActiveSeconds(t)),
@@ -437,7 +439,7 @@ function renderLogs(){
     }
     card.innerHTML = `
       <div class="session-card-top">
-        <div class="session-badge">${tagTxt}</div>
+        ${s.photoUrl ? `<img src="${escapeHtml(s.photoUrl)}" class="session-avatar" alt="session photo" />` : `<div class="session-badge">${tagTxt}</div>`}
         <div class="session-info">
           <div class="intention">${escapeHtml(s.intention || "Study session")}</div>
           <div class="meta">${dateStr} · ${timeStr}${s.rating ? " · " + "★".repeat(s.rating) : ""}</div>

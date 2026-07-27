@@ -23,8 +23,20 @@ function initFirebase(){
       firebase.initializeApp(firebaseConfig);
       fbAuth = firebase.auth();
       fbDb = firebase.firestore();
+      try{ fbStorage = firebase.storage(); }catch(e){ console.warn('firebase.storage not available', e); }
     }catch(e){ console.error('Firebase init failed', e); }
   }
+}
+
+async function uploadSessionPhoto(sessionId, blob){
+  if(!fbUser || !fbStorage) return null;
+  try{
+    const path = `users/${fbUser.uid}/sessionPhotos/${sessionId}.jpg`;
+    const ref = fbStorage.ref().child(path);
+    const snap = await ref.put(blob);
+    const url = await snap.ref.getDownloadURL();
+    return url;
+  }catch(e){ console.error('upload failed', e); return null; }
 }
 
 function storageGet(key, fallback){

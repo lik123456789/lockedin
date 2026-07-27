@@ -177,6 +177,27 @@ function renderTrackerChips(){
         }
         renderTrackerChips();
       };
+
+      // Photo capture controls (session)
+      const capBtn = $('btn-capture-photo');
+      if(capBtn) capBtn.onclick = async (e) => {
+        e.stopPropagation();
+        const url = await capturePhoto();
+        if(url){
+          const img = $('session-photo-thumb');
+          img.src = url;
+          img.style.display = 'block';
+          $('btn-clear-photo').style.display = 'inline-block';
+        }
+      };
+      const clearBtn = $('btn-clear-photo');
+      if(clearBtn) clearBtn.onclick = (e) => {
+        e.stopPropagation();
+        currentSessionPhotoUrl = null;
+        const img = $('session-photo-thumb');
+        if(img){ img.src = ''; img.style.display = 'none'; }
+        clearBtn.style.display = 'none';
+      };
     }
     row.appendChild(chip);
   });

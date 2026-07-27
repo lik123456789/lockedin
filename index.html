@@ -93,12 +93,6 @@
 
   <!-- ============ SESSION ============ -->
   <div class="screen" id="screen-session">
-    <div class="orientation-guard" id="orientation-guard">
-      <div class="orientation-guard-card">
-        <div class="orientation-guard-title">Rotate to portrait</div>
-        <div class="orientation-guard-text">Locked In only allows landscape during an active focus session.</div>
-      </div>
-    </div>
     <div class="cam-fullscreen" id="cam-fullscreen">
       <video id="cam-video" autoplay muted playsinline></video>
       <div class="cam-off-msg" id="cam-off-msg" style="display:none;">Camera unavailable — continuing without video. Your timer still runs.</div>
@@ -118,6 +112,13 @@
           <button class="pusher end" id="btn-end">End</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="orientation-guard" id="orientation-guard">
+    <div class="orientation-guard-card">
+      <div class="orientation-guard-title">Rotate to portrait</div>
+      <div class="orientation-guard-text">Locked In only allows landscape during an active focus session.</div>
     </div>
   </div>
 

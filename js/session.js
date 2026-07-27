@@ -93,7 +93,7 @@ function renderTrackerToggles(){
 
     const el = document.createElement('div');
     el.className = "tracker-toggle" + (t.id === currentActiveTrackerId ? " active" : "");
-    el.innerHTML = `<span class="tg-count">${t.count}</span>`;
+    el.innerHTML = `<span class="tg-name">${escapeHtml(t.name)}</span><span class="tg-count">${t.count}</span>`;
     el.onclick = (e) => { e.stopPropagation(); switchActiveTracker(t.id); };
 
     wrap.appendChild(dec);
@@ -106,8 +106,11 @@ function renderTrackerToggles(){
 function updateTapHint(){
   const t = findActiveTracker(currentActiveTrackerId);
   const hint = $('tap-count-hint');
-  if(!t){ hint.textContent = ""; return; }
-  hint.innerHTML = "Tapping the screen logs a count — you'll review and edit everything at the end.";
+  if(!t){
+    hint.innerHTML = "<b>Select a tracker</b> to label what you count on screen.";
+    return;
+  }
+  hint.innerHTML = "Tapping the screen logs a count for <b>" + escapeHtml(t.name) + "</b> — you'll review and edit everything at the end.";
 }
 
 async function startCamera(){
@@ -219,6 +222,7 @@ setupSessionUI();
 function handleOrientationLogic() {
   const isLandscape = window.innerWidth > window.innerHeight;
   document.body.classList.toggle('mode-portrait-guard', sessionState !== 'active' && isLandscape);
+  $('orientation-guard').classList.toggle('visible', sessionState !== 'active' && isLandscape);
   if (sessionState !== 'active') {
     document.body.classList.remove('mode-landscape', 'mode-portrait');
     return;

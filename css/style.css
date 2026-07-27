@@ -127,7 +127,7 @@ textarea#intention:focus { outline:none; border-color:var(--brass); }
 .back-link { text-align:center; color:var(--text-faint); font-size:13px; padding:14px 0 0; cursor:pointer; }
 
 /* SESSION */
-#screen-session { padding:0; }
+#screen-session { padding:0; background:#000; }
 .orientation-guard { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:var(--bg); z-index:200; padding:24px; text-align:center; overflow:hidden; touch-action:none; overscroll-behavior:none; }
 .orientation-guard.visible { display:flex; }
 .orientation-guard-card { max-width:280px; padding:18px 20px; border-radius:18px; border:1px solid var(--hairline-strong); background:rgba(23,31,35,0.96); box-shadow:0 18px 50px rgba(0,0,0,0.35); }
@@ -566,6 +566,14 @@ body.mode-portrait-guard {
 }
 
 body.mode-portrait-guard #app {
+  display:none !important;
+}
+
+body.mode-portrait-guard #orientation-guard {
+  display:flex !important;
+}
+
+body.mode-portrait-guard #app {
   max-width: none !important;
   width: 100vw !important;
   height: 100vh !important;
@@ -612,6 +620,7 @@ body.session-active #screen-session {
   z-index: 100;
   overflow: hidden !important;
   overscroll-behavior: none;
+  background:#000;
 }
 
 body.session-active .cam-fullscreen {

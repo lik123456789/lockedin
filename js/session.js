@@ -223,12 +223,19 @@ setupSessionUI();
 
 function handleOrientationLogic() {
   const isLandscape = window.innerWidth > window.innerHeight;
-  document.body.classList.toggle('mode-portrait-guard', sessionState !== 'active' && isLandscape);
-  $('orientation-guard').classList.toggle('visible', sessionState !== 'active' && isLandscape);
+  // Show the portrait guard ONLY when a session is active and the viewport is NOT landscape
+  const showPortraitGuard = (sessionState === 'active' && !isLandscape);
+  document.body.classList.toggle('mode-portrait-guard', showPortraitGuard);
+  const guardEl = $('orientation-guard');
+  if (guardEl) guardEl.classList.toggle('visible', showPortraitGuard);
+
+  // If session isn't active, clear orientation classes and exit
   if (sessionState !== 'active') {
     document.body.classList.remove('mode-landscape', 'mode-portrait');
     return;
   }
+
+  // While session is active, set explicit orientation classes
   if (isLandscape) {
     document.body.classList.add('mode-landscape');
     document.body.classList.remove('mode-portrait');

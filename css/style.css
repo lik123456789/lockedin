@@ -541,10 +541,12 @@ textarea#intention:focus { outline:none; border-color:var(--brass); }
 body.session-active {
   overflow: hidden !important;
   position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
   touch-action: none;
+  overscroll-behavior: none;
 }
 
 /* Expand active session container to full screen in ALL orientations */
@@ -554,6 +556,7 @@ body.session-active #app {
   height: 100vh !important;
   height: 100dvh !important;
   padding-bottom: 0 !important;
+  overflow: hidden !important;
 }
 
 body.session-active #screen-session {
@@ -563,12 +566,16 @@ body.session-active #screen-session {
   height: 100vh !important;
   height: 100dvh !important;
   z-index: 100;
+  overflow: hidden !important;
+  overscroll-behavior: none;
 }
 
 body.session-active .cam-fullscreen {
   width: 100vw !important;
   height: 100vh !important;
   height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
 }
 
 /* ==========================================================================

@@ -9,6 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,6 +19,7 @@ jobs:
       - name: Deploy branch to gh-pages/<branch>
         uses: JamesIves/github-pages-deploy-action@v4.4.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages                      # target branch to commit to
           folder: .                             # folder to publish (repo root for static site)
           destination_dir: ${{ github.ref_name }} # publish to subfolder named after branch

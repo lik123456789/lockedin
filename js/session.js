@@ -217,11 +217,12 @@ function setupSessionUI(){
 setupSessionUI();
 
 function handleOrientationLogic() {
+  const isLandscape = window.innerWidth > window.innerHeight;
+  document.body.classList.toggle('mode-portrait-guard', sessionState !== 'active' && isLandscape);
   if (sessionState !== 'active') {
     document.body.classList.remove('mode-landscape', 'mode-portrait');
     return;
   }
-  const isLandscape = window.innerWidth > window.innerHeight;
   if (isLandscape) {
     document.body.classList.add('mode-landscape');
     document.body.classList.remove('mode-portrait');
@@ -232,14 +233,12 @@ function handleOrientationLogic() {
 }
 
 window.addEventListener('resize', () => {
-  if (sessionState === 'active') {
-    handleOrientationLogic();
-  }
+  handleOrientationLogic();
 });
 
 window.addEventListener('orientationchange', () => {
-  if (sessionState === 'active') {
-    handleOrientationLogic();
-  }
+  handleOrientationLogic();
 });
+
+handleOrientationLogic();
 

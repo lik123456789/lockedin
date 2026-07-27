@@ -128,6 +128,11 @@ textarea#intention:focus { outline:none; border-color:var(--brass); }
 
 /* SESSION */
 #screen-session { padding:0; }
+.orientation-guard { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:var(--bg); z-index:200; padding:24px; text-align:center; overflow:hidden; touch-action:none; overscroll-behavior:none; }
+.orientation-guard.visible { display:flex; }
+.orientation-guard-card { max-width:280px; padding:18px 20px; border-radius:18px; border:1px solid var(--hairline-strong); background:rgba(23,31,35,0.96); box-shadow:0 18px 50px rgba(0,0,0,0.35); }
+.orientation-guard-title { font-size:18px; font-weight:800; margin-bottom:8px; }
+.orientation-guard-text { font-size:13px; line-height:1.5; color:var(--text-faint); }
 .cam-fullscreen { position:absolute; inset:0; min-height:100vh; width:100%; background:#000; overflow:hidden; }
 .cam-fullscreen video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
 .cam-off-msg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; color:var(--text-faint); padding:40px; line-height:1.5; z-index:2; }
@@ -547,6 +552,45 @@ body.session-active {
   height: 100dvh;
   touch-action: none;
   overscroll-behavior: none;
+}
+
+body.mode-portrait-guard {
+  overflow: hidden !important;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+body.mode-portrait-guard #app {
+  max-width: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+body.mode-portrait-guard .tab-bar,
+body.mode-portrait-guard .fab {
+  display: none !important;
+}
+
+body.mode-portrait-guard #screen-session {
+  display:block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+body.mode-portrait-guard .cam-fullscreen {
+  display:none !important;
 }
 
 /* Expand active session container to full screen in ALL orientations */

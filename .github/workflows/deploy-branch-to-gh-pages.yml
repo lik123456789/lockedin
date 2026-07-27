@@ -1,0 +1,24 @@
+name: Deploy branch to gh-pages subfolder
+
+on:
+  push:
+    # Run for all branches except the gh-pages branch to avoid recursion
+    branches-ignore:
+      - gh-pages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy branch to gh-pages/<branch>
+        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        with:
+          branch: gh-pages                      # target branch to commit to
+          folder: .                             # folder to publish (repo root for static site)
+          destination_dir: ${{ github.ref_name }} # publish to subfolder named after branch
+          clean: false
+          commit_message: 'Deploy ${{ github.ref_name }} to gh-pages'
